@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>CORE-54 — Corso</title>
+<style>
+  :root {
+    --bg: #050506;
+    --surface: #101012;
+    --surface2: #17171a;
+    --border: #2a2a2e;
+    --yellow: #FFDD00;
+    --text: #f4f4f5;
+    --text2: #9a9aa2;
+    --danger: #ff4d4f;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+  #configError {
+    display: none; background: var(--danger); color: #fff; font-weight: 700;
+    padding: 14px 18px; text-align: center; position: sticky; top: 0; z-index: 50;
+  }
+  header { display: flex; align-items: center; justify-content: space-between; padding: 18px 24px; border-bottom: 1px solid var(--border); }
+  header h1 { font-size: 18px; margin: 0; letter-spacing: .5px; }
+  header h1 b { color: var(--yellow); }
+  #logoutBtn { background: none; border: 1px solid var(--border); color: var(--text2); padding: 8px 14px; border-radius: 8px; cursor: pointer; display: none; }
+  main { max-width: 720px; margin: 0 auto; padding: 32px 20px 80px; }
+
+  /* Login */
+  #loginCard { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 28px; max-width: 380px; margin: 60px auto 0; }
+  #loginCard h2 { margin-top: 0; font-size: 16px; }
+  #loginCard label { display: block; font-size: 13px; color: var(--text2); margin: 14px 0 6px; }
+  #loginCard input { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); color: var(--text); font-size: 14px; }
+  #loginCard button { width: 100%; margin-top: 20px; padding: 12px; border: none; border-radius: 8px; background: var(--yellow); color: #111; font-weight: 800; cursor: pointer; font-size: 14px; }
+  #loginCard button:disabled { opacity: .6; cursor: default; }
+  #loginError { color: var(--danger); font-size: 13px; margin-top: 12px; min-height: 16px; }
+
+  /* Lista episodi */
+  .upsell { background: #2a2510; border: 1px solid #4a3f10; color: var(--text); font-size: 13px; border-radius: 10px; padding: 12px 14px; margin-bottom: 20px; }
+  .modulo-title { color: var(--yellow); font-size: 11px; font-weight: 800; letter-spacing: .8px; text-transform: uppercase; margin: 26px 0 10px; }
+  .card { display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 8px; cursor: pointer; }
+  .card.locked { opacity: .55; cursor: not-allowed; }
+  .card .icon { width: 22px; text-align: center; flex-shrink: 0; }
+  .card .titolo { flex: 1; font-size: 14px; font-weight: 600; }
+  .free-badge { background: var(--yellow); color: #111; font-size: 10px; font-weight: 800; letter-spacing: .5px; padding: 3px 8px; border-radius: 999px; }
+  .empty { color: var(--text2); text-align: center; margin-top: 40px; }
+
+  /* Player modal */
+  #playerOverlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.9); z-index: 100; align-items: center; justify-content: center; flex-direction: column; }
+  #playerClose { position: absolute; top: 18px; right: 22px; background: none; border: none; color: #fff; font-size: 28px; cursor: pointer; line-height: 1; }
+  #playerBox { position: relative; }
+  #playerBox.horiz { width: min(92vw, 960px); aspect-ratio: 16 / 9; }
+  #playerBox.vert { width: min(50vh, 92vw); aspect-ratio: 1080 / 1920; max-height: 88vh; }
+  #playerBox iframe { width: 100%; height: 100%; border: 0; border-radius: 8px; }
+  #playerLoading { color: var(--text2); font-size: 13px; }
+  #playerError { color: var(--danger); font-size: 13px; text-align: center; max-width: 320px; }
+</style>
+</head>
+<body>
+
+<div id="configError">⚠ Configurazione mancante: apri index.html e sostituisci SUPABASE_ANON_KEY con la vera anon/public key del progetto Supabase (Project Settings → API). Questa pagina non funziona finché non è impostata.</div>
+
+<header>
+  <h1>CORE-54 — <b>Corso</b></h1>
+  <button id="logoutBtn">Esci</button>
+</header>
+
+<main>
+  <div id="loginCard">
+    <h2>Accedi</h2>
+    <label for="email">Email</label>
+    <input id="email" type="email" autocomplete="username">
+    <label for="password">Password</label>
+    <input id="password" type="password" autocomplete="current-password">
+    <button id="loginBtn">Entra</button>
+    <div id="loginError"></div>
+  </div>
+
+  <div id="corsoWrap" style="display:none">
+    <div id="upsell" class="upsell" style="display:none">Gli episodi contrassegnati <b>FREE</b> sono sempre disponibili. Il resto del corso si sblocca con Lifetime.</div>
+    <div id="lista"></div>
+  </div>
+</main>
+
+<div id="playerOverlay">
+  <button id="playerClose">×</button>
+  <div id="playerBox" class="horiz">
+    <div id="playerLoading">Caricamento…</div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+// ─── CONFIGURAZIONE — valori dell'app CORE-54, stessi usati dal client mobile ───
+// SUPABASE_URL è pubblico (deriva dal Project ID, già visibile in vari documenti del progetto).
+// SUPABASE_ANON_KEY è la chiave "anon/public" di Supabase (Project Settings → API) — è pensata
+// per stare in chiaro in un client (la stessa gira già nel bundle dell'app mobile), MA questo file
+// arriva con un placeholder: va sostituita PRIMA di pubblicare la pagina, altrimenti il banner
+// rosso in alto resta visibile e il login non funziona (fallisce in modo rumoroso di proposito,
+// non con uno spinner infinito senza spiegazione — lezione del bug del 30/08/2026).
+const SUPABASE_URL = 'https://ppyyvmyhprxahiwijyeu.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_T4WiIXTIbQjtSh7IQc0pVQ_Vgg7_gPp';
+const EDGE_FUNCTION_NAME = 'get-video-token';
+
+const MODULO_TITOLI = {
+  1: 'Strategia in sintesi',
+  2: 'Fondamenti',
+  3: 'Strategia in dettaglio',
+  4: 'Aprire i conti',
+  5: "L'app pagina per pagina",
+};
+
+if (SUPABASE_ANON_KEY === 'INCOLLA_QUI_LA_ANON_KEY_SUPABASE') {
+  document.getElementById('configError').style.display = 'block';
+}
+
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: { persistSession: true, autoRefreshToken: true },
+});
+
+const $ = (id) => document.getElementById(id);
+let corsoEpisodi = [];
+let hasLifetimeLocal = false;
+let isAdminLocal = false;
+
+async function boot() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) await mostraCorso(session);
+  else mostraLogin();
+}
+
+function mostraLogin() {
+  $('loginCard').style.display = 'block';
+  $('corsoWrap').style.display = 'none';
+  $('logoutBtn').style.display = 'none';
+}
+
+async function mostraCorso(session) {
+  $('loginCard').style.display = 'none';
+  $('corsoWrap').style.display = 'block';
+  $('logoutBtn').style.display = 'inline-block';
+
+  isAdminLocal = session.user?.role === 'admin';
+
+  const [{ data: episodi }, { data: abbonamenti }] = await Promise.all([
+    sb.from('corso_episodi').select('*').eq('pubblicato', true).order('modulo', { ascending: true }).order('ordine', { ascending: true }),
+    sb.from('abbonamenti_utenti').select('tipo, stato_abbonamento').eq('client_id', session.user.id),
+  ]);
+
+  corsoEpisodi = episodi || [];
+  hasLifetimeLocal = (abbonamenti || []).some(a => a.tipo === 'lifetime' && (a.stato_abbonamento || '').toLowerCase() === 'attivo');
+
+  // NOTA: questo controllo lato client serve SOLO per mostrare lucchetti/badge nella UI. Il vero
+  // controllo di accesso — quello che conta davvero — vive nella Edge Function get-video-token,
+  // interrogata al momento di aprire un episodio: è lì che si decide se il link firmato viene
+  // rilasciato o no, non qui.
+  renderLista();
+}
+
+function sbloccato(ep) {
+  return isAdminLocal || ep.gratuito || hasLifetimeLocal;
+}
+
+function renderLista() {
+  $('upsell').style.display = (!hasLifetimeLocal && !isAdminLocal) ? 'block' : 'none';
+  const lista = $('lista');
+  lista.innerHTML = '';
+
+  if (corsoEpisodi.length === 0) {
+    lista.innerHTML = '<div class="empty">Nessun episodio disponibile al momento.</div>';
+    return;
+  }
+
+  const moduli = new Map();
+  corsoEpisodi.forEach(ep => {
+    if (!moduli.has(ep.modulo)) moduli.set(ep.modulo, []);
+    moduli.get(ep.modulo).push(ep);
+  });
+
+  Array.from(moduli.keys()).sort((a, b) => a - b).forEach(modNum => {
+    const h = document.createElement('div');
+    h.className = 'modulo-title';
+    h.textContent = `Modulo ${modNum} · ${MODULO_TITOLI[modNum] || ''}`;
+    lista.appendChild(h);
+
+    moduli.get(modNum).forEach(ep => {
+      const locked = !sbloccato(ep);
+      const card = document.createElement('div');
+      card.className = 'card' + (locked ? ' locked' : '');
+      card.innerHTML = `
+        <div class="icon">${locked ? '🔒' : '▶'}</div>
+        <div class="titolo">${ep.titolo}</div>
+        ${ep.gratuito ? '<div class="free-badge">FREE</div>' : ''}
+      `;
+      card.addEventListener('click', () => apriEpisodio(ep, locked));
+      lista.appendChild(card);
+    });
+  });
+}
+
+async function apriEpisodio(ep, locked) {
+  if (locked) {
+    alert('Questo episodio si sblocca con Lifetime. Gli episodi FREE restano sempre disponibili.');
+    return;
+  }
+
+  const box = $('playerBox');
+  box.className = ep.modulo === 5 ? 'vert' : 'horiz';
+  box.innerHTML = '<div id="playerLoading">Caricamento…</div>';
+  $('playerOverlay').style.display = 'flex';
+
+  const { data: { session } } = await sb.auth.getSession();
+  try {
+    const resp = await fetch(`${SUPABASE_URL}/functions/v1/${EDGE_FUNCTION_NAME}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.access_token}`,
+        'apikey': SUPABASE_ANON_KEY,
+      },
+      body: JSON.stringify({ episodio_id: ep.id }),
+    });
+    const json = await resp.json();
+    if (!resp.ok) throw new Error(json.error || 'Errore sconosciuto');
+
+    box.innerHTML = `<iframe src="${json.embedUrl}" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
+  } catch (e) {
+    box.innerHTML = `<div id="playerError">Impossibile riprodurre il video: ${e.message}</div>`;
+  }
+}
+
+$('playerClose').addEventListener('click', () => {
+  $('playerOverlay').style.display = 'none';
+  $('playerBox').innerHTML = '';
+});
+
+$('loginBtn').addEventListener('click', async () => {
+  const email = $('email').value.trim();
+  const password = $('password').value;
+  $('loginError').textContent = '';
+  $('loginBtn').disabled = true;
+  try {
+    const { data, error } = await sb.auth.signInWithPassword({ email, password });
+    if (error) { $('loginError').textContent = error.message; return; }
+    await mostraCorso(data.session);
+  } finally {
+    $('loginBtn').disabled = false;
+  }
+});
+
+$('logoutBtn').addEventListener('click', async () => {
+  await sb.auth.signOut();
+  mostraLogin();
+});
+
+boot();
+</script>
+</body>
+</html>
