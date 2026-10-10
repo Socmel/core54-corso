@@ -25,6 +25,11 @@
   header { display: flex; align-items: center; justify-content: space-between; padding: 18px 24px; border-bottom: 1px solid var(--border); }
   header h1 { font-size: 18px; margin: 0; letter-spacing: .5px; }
   header h1 b { color: var(--yellow); }
+  .hdr-right { display: flex; align-items: center; gap: 10px; }
+  #langSelect { appearance: none; -webkit-appearance: none; background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%239a9aa2'/%3E%3C/svg%3E") no-repeat right 9px center; border: 1px solid var(--border); color: var(--text2); font-size: 13px; font-weight: 700; padding: 8px 24px 8px 11px; border-radius: 8px; cursor: pointer; font-family: inherit; }
+  #langSelect:hover, #langSelect:focus { border-color: var(--yellow); color: var(--yellow); outline: none; }
+  #langSelect option { background: var(--surface); color: var(--text); }
+  .lang-note { font-size: 12.5px; color: var(--text2); margin: -8px 0 16px; }
   #logoutBtn { background: none; border: 1px solid var(--border); color: var(--text2); padding: 8px 14px; border-radius: 8px; cursor: pointer; display: none; }
   main { max-width: 720px; margin: 0 auto; padding: 32px 20px 80px; }
   main.wide { max-width: 1200px; }
@@ -95,42 +100,53 @@
 <div id="configError">⚠ Configurazione mancante: apri index.html e sostituisci SUPABASE_ANON_KEY con la vera anon/public key del progetto Supabase (Project Settings → API). Questa pagina non funziona finché non è impostata.</div>
 
 <header>
-  <h1>CORE-54 — <b>Area clienti</b></h1>
-  <button id="logoutBtn">Esci</button>
+  <h1>CORE-54 — <b data-i18n="hdr.title">Area clienti</b></h1>
+  <div class="hdr-right">
+    <select id="langSelect" aria-label="Lingua / Language">
+      <option value="it">IT</option>
+      <option value="en">EN</option>
+      <option value="de">DE</option>
+      <option value="es">ES</option>
+      <option value="pl">PL</option>
+    </select>
+    <button id="logoutBtn" data-i18n="hdr.logout">Esci</button>
+  </div>
 </header>
 
 <main id="main">
   <div id="loginCard">
-    <h2>Accedi</h2>
-    <label for="email">Email</label>
+    <h2 data-i18n="login.title">Accedi</h2>
+    <label for="email" data-i18n="login.email">Email</label>
     <input id="email" type="email" autocomplete="username">
-    <label for="password">Password</label>
+    <label for="password" data-i18n="login.password">Password</label>
     <input id="password" type="password" autocomplete="current-password">
-    <button id="loginBtn">Entra</button>
+    <button id="loginBtn" data-i18n="login.btn">Entra</button>
     <div id="loginError"></div>
   </div>
 
   <nav id="tabs" role="tablist">
-    <button data-tab="corso" class="on" role="tab">🎓 Corso</button>
-    <button data-tab="strategie" role="tab">🗺️ Strategie</button>
-    <button data-tab="calcolatore" role="tab">🧮 Calcolatore</button>
+    <button data-tab="corso" class="on" role="tab" data-i18n="tab.corso">🎓 Corso</button>
+    <button data-tab="strategie" role="tab" data-i18n="tab.strategie">🗺️ Strategie</button>
+    <button data-tab="calcolatore" role="tab" data-i18n="tab.calc">🧮 Calcolatore</button>
   </nav>
 
   <!-- ═══ CORSO ═══ -->
   <section class="pane" id="pane-corso">
-    <div id="upsell" class="upsell" style="display:none">Gli episodi contrassegnati <b>FREE</b> sono sempre disponibili. Il resto del corso si sblocca con Lifetime.</div>
+    <p class="lang-note" data-i18n="note.video" hidden></p>
+    <div id="upsell" class="upsell" style="display:none" data-i18n-html="corso.upsell">Gli episodi contrassegnati <b>FREE</b> sono sempre disponibili. Il resto del corso si sblocca con Lifetime.</div>
     <div id="lista"></div>
   </section>
 
   <!-- ═══ STRATEGIE ═══ -->
   <section class="pane" id="pane-strategie">
     <div class="pane-head">
-      <h2>Mappe strategiche</h2>
-      <p>I percorsi della strategia, fase Sfida e fase Reale.</p>
+      <h2 data-i18n="strat.title">Mappe strategiche</h2>
+      <p data-i18n="strat.sub">I percorsi della strategia, fase Sfida e fase Reale.</p>
     </div>
+    <p class="lang-note" data-i18n="note.mappe" hidden></p>
     <div class="sub-switch" id="strat-switch">
-      <button data-file="strategia50k.html" class="on">Strategia 50K</button>
-      <button data-file="strategia100k.html">Strategia 100K</button>
+      <button data-file="strategia50k.html" class="on" data-i18n="strat.50k">Strategia 50K</button>
+      <button data-file="strategia100k.html" data-i18n="strat.100k">Strategia 100K</button>
     </div>
     <div id="strat-body"></div>
   </section>
@@ -138,8 +154,8 @@
   <!-- ═══ CALCOLATORE ═══ -->
   <section class="pane" id="pane-calcolatore">
     <div class="pane-head">
-      <h2>Calcolatore SL / TP</h2>
-      <p>Inserisci i dati della prop: ottieni i valori di SL e TP da impostare su Core54 e l'effetto sul saldo del broker.</p>
+      <h2 data-i18n="calc.title">Calcolatore SL / TP</h2>
+      <p data-i18n="calc.sub">Inserisci i dati della prop: ottieni i valori di SL e TP da impostare su Core54 e l'effetto sul saldo del broker.</p>
     </div>
     <div id="calc-body"></div>
   </section>
@@ -148,7 +164,7 @@
 <div id="playerOverlay">
   <button id="playerClose">×</button>
   <div id="playerBox" class="horiz">
-    <div id="playerLoading">Caricamento…</div>
+    <div id="playerLoading">…</div>
   </div>
 </div>
 
@@ -171,13 +187,109 @@ const EDGE_FUNCTION_NAME = 'get-video-token';
 // toccare questa pagina.
 const BUCKET_RISERVATO = 'riservato';
 
-const MODULO_TITOLI = {
-  1: 'Strategia in sintesi',
-  2: 'Fondamenti',
-  3: 'Strategia in dettaglio',
-  4: 'Aprire i conti',
-  5: "L'app pagina per pagina",
+// ─── LINGUE (stesse dell'app: IT, EN, DE, ES, PL) — 10/10/2026 ───
+// Testi dell'interfaccia tradotti qui. Titoli episodi: per ora arrivano dal DB in italiano; se in
+// futuro si aggiungono colonne corso_episodi.titolo_en / titolo_de / ... la pagina le usa da sola.
+// Audio dei video: la lingua scelta viene già inviata a get-video-token (campo "lang"), che oggi la
+// ignora e restituisce sempre il video italiano — quando ci saranno i video tradotti basterà
+// aggiornare la Edge Function, non questa pagina.
+const LANGS = ['it', 'en', 'de', 'es', 'pl'];
+const I18N = {
+  it: {
+    'meta.title': 'CORE-54 — Area clienti', 'hdr.title': 'Area clienti', 'hdr.logout': 'Esci',
+    'login.title': 'Accedi', 'login.email': 'Email', 'login.password': 'Password', 'login.btn': 'Entra',
+    'tab.corso': '🎓 Corso', 'tab.strategie': '🗺️ Strategie', 'tab.calc': '🧮 Calcolatore',
+    'corso.upsell': 'Gli episodi contrassegnati <b>FREE</b> sono sempre disponibili. Il resto del corso si sblocca con Lifetime.',
+    'corso.modulo': 'Modulo', 'corso.empty': 'Nessun episodio disponibile al momento.',
+    'corso.locked_alert': 'Questo episodio si sblocca con Lifetime. Gli episodi FREE restano sempre disponibili.',
+    'mod.1': 'Strategia in sintesi', 'mod.2': 'Fondamenti', 'mod.3': 'Strategia in dettaglio', 'mod.4': 'Aprire i conti', 'mod.5': "L'app pagina per pagina",
+    'note.video': '', 'note.mappe': '',
+    'strat.title': 'Mappe strategiche', 'strat.sub': 'I percorsi della strategia, fase Sfida e fase Reale.',
+    'strat.50k': 'Strategia 50K', 'strat.100k': 'Strategia 100K',
+    'calc.title': 'Calcolatore SL / TP', 'calc.sub': "Inserisci i dati della prop: ottieni i valori di SL e TP da impostare su Core54 e l'effetto sul saldo del broker.",
+    'ris.locked_t': 'Contenuto riservato ai clienti Lifetime', 'ris.locked_p': 'Strategie e calcolatore si sbloccano con il piano Lifetime.',
+    'ris.loading': 'Caricamento…', 'ris.error': 'Impossibile caricare il contenuto. Riprova tra poco; se il problema continua scrivi a info@core54.app.',
+    'player.loading': 'Caricamento…', 'player.error': 'Impossibile riprodurre il video:'
+  },
+  en: {
+    'meta.title': 'CORE-54 — Client area', 'hdr.title': 'Client area', 'hdr.logout': 'Log out',
+    'login.title': 'Log in', 'login.email': 'Email', 'login.password': 'Password', 'login.btn': 'Enter',
+    'tab.corso': '🎓 Course', 'tab.strategie': '🗺️ Strategies', 'tab.calc': '🧮 Calculator',
+    'corso.upsell': 'Episodes marked <b>FREE</b> are always available. The rest of the course unlocks with Lifetime.',
+    'corso.modulo': 'Module', 'corso.empty': 'No episodes available at the moment.',
+    'corso.locked_alert': 'This episode unlocks with Lifetime. FREE episodes are always available.',
+    'mod.1': 'The strategy in brief', 'mod.2': 'Fundamentals', 'mod.3': 'The strategy in detail', 'mod.4': 'Opening the accounts', 'mod.5': 'The app, page by page',
+    'note.video': 'Videos are currently in Italian.', 'note.mappe': '',
+    'strat.title': 'Strategy maps', 'strat.sub': 'The strategy paths, Challenge phase and Funded phase.',
+    'strat.50k': 'Strategy 50K', 'strat.100k': 'Strategy 100K',
+    'calc.title': 'SL / TP calculator', 'calc.sub': 'Enter the prop data: get the SL and TP values to set on Core54 and the effect on the broker balance.',
+    'ris.locked_t': 'Content reserved for Lifetime clients', 'ris.locked_p': 'Strategies and calculator unlock with the Lifetime plan.',
+    'ris.loading': 'Loading…', 'ris.error': 'Unable to load the content. Please try again shortly; if the problem persists write to info@core54.app.',
+    'player.loading': 'Loading…', 'player.error': 'Unable to play the video:'
+  },
+  de: {
+    'meta.title': 'CORE-54 — Kundenbereich', 'hdr.title': 'Kundenbereich', 'hdr.logout': 'Abmelden',
+    'login.title': 'Anmelden', 'login.email': 'E-Mail', 'login.password': 'Passwort', 'login.btn': 'Einloggen',
+    'tab.corso': '🎓 Kurs', 'tab.strategie': '🗺️ Strategien', 'tab.calc': '🧮 Rechner',
+    'corso.upsell': 'Mit <b>FREE</b> markierte Folgen sind immer verfügbar. Der Rest des Kurses wird mit Lifetime freigeschaltet.',
+    'corso.modulo': 'Modul', 'corso.empty': 'Derzeit sind keine Folgen verfügbar.',
+    'corso.locked_alert': 'Diese Folge wird mit Lifetime freigeschaltet. FREE-Folgen sind immer verfügbar.',
+    'mod.1': 'Die Strategie kurz erklärt', 'mod.2': 'Grundlagen', 'mod.3': 'Die Strategie im Detail', 'mod.4': 'Konten eröffnen', 'mod.5': 'Die App Seite für Seite',
+    'note.video': 'Die Videos sind derzeit auf Italienisch.', 'note.mappe': '',
+    'strat.title': 'Strategiekarten', 'strat.sub': 'Die Pfade der Strategie, Challenge-Phase und Funded-Phase.',
+    'strat.50k': 'Strategie 50K', 'strat.100k': 'Strategie 100K',
+    'calc.title': 'SL/TP-Rechner', 'calc.sub': 'Gib die Daten der Prop ein: Du erhältst die SL- und TP-Werte für Core54 und die Auswirkung auf den Broker-Saldo.',
+    'ris.locked_t': 'Inhalt nur für Lifetime-Kunden', 'ris.locked_p': 'Strategien und Rechner werden mit dem Lifetime-Plan freigeschaltet.',
+    'ris.loading': 'Wird geladen…', 'ris.error': 'Inhalt konnte nicht geladen werden. Versuche es gleich noch einmal; wenn das Problem bleibt, schreib an info@core54.app.',
+    'player.loading': 'Wird geladen…', 'player.error': 'Video kann nicht abgespielt werden:'
+  },
+  es: {
+    'meta.title': 'CORE-54 — Área de clientes', 'hdr.title': 'Área de clientes', 'hdr.logout': 'Salir',
+    'login.title': 'Inicia sesión', 'login.email': 'Email', 'login.password': 'Contraseña', 'login.btn': 'Entrar',
+    'tab.corso': '🎓 Curso', 'tab.strategie': '🗺️ Estrategias', 'tab.calc': '🧮 Calculadora',
+    'corso.upsell': 'Los episodios marcados como <b>FREE</b> están siempre disponibles. El resto del curso se desbloquea con Lifetime.',
+    'corso.modulo': 'Módulo', 'corso.empty': 'No hay episodios disponibles por el momento.',
+    'corso.locked_alert': 'Este episodio se desbloquea con Lifetime. Los episodios FREE están siempre disponibles.',
+    'mod.1': 'La estrategia en resumen', 'mod.2': 'Fundamentos', 'mod.3': 'La estrategia en detalle', 'mod.4': 'Abrir las cuentas', 'mod.5': 'La app, página a página',
+    'note.video': 'Por ahora los vídeos están en italiano.', 'note.mappe': '',
+    'strat.title': 'Mapas estratégicos', 'strat.sub': 'Los recorridos de la estrategia, fase de Desafío y fase Real.',
+    'strat.50k': 'Estrategia 50K', 'strat.100k': 'Estrategia 100K',
+    'calc.title': 'Calculadora SL / TP', 'calc.sub': 'Introduce los datos de la prop: obtén los valores de SL y TP para configurar en Core54 y el efecto en el saldo del bróker.',
+    'ris.locked_t': 'Contenido reservado a clientes Lifetime', 'ris.locked_p': 'Las estrategias y la calculadora se desbloquean con el plan Lifetime.',
+    'ris.loading': 'Cargando…', 'ris.error': 'No se ha podido cargar el contenido. Inténtalo de nuevo en breve; si el problema continúa escribe a info@core54.app.',
+    'player.loading': 'Cargando…', 'player.error': 'No se puede reproducir el vídeo:'
+  },
+  pl: {
+    'meta.title': 'CORE-54 — Strefa klienta', 'hdr.title': 'Strefa klienta', 'hdr.logout': 'Wyloguj',
+    'login.title': 'Zaloguj się', 'login.email': 'E-mail', 'login.password': 'Hasło', 'login.btn': 'Wejdź',
+    'tab.corso': '🎓 Kurs', 'tab.strategie': '🗺️ Strategie', 'tab.calc': '🧮 Kalkulator',
+    'corso.upsell': 'Odcinki oznaczone jako <b>FREE</b> są zawsze dostępne. Reszta kursu odblokowuje się z Lifetime.',
+    'corso.modulo': 'Moduł', 'corso.empty': 'Obecnie brak dostępnych odcinków.',
+    'corso.locked_alert': 'Ten odcinek odblokowuje się z Lifetime. Odcinki FREE są zawsze dostępne.',
+    'mod.1': 'Strategia w skrócie', 'mod.2': 'Podstawy', 'mod.3': 'Strategia szczegółowo', 'mod.4': 'Otwieranie kont', 'mod.5': 'Aplikacja strona po stronie',
+    'note.video': 'Filmy są na razie w języku włoskim.', 'note.mappe': '',
+    'strat.title': 'Mapy strategiczne', 'strat.sub': 'Ścieżki strategii, faza wyzwania i faza finansowana.',
+    'strat.50k': 'Strategia 50K', 'strat.100k': 'Strategia 100K',
+    'calc.title': 'Kalkulator SL / TP', 'calc.sub': 'Wpisz dane propa: otrzymasz wartości SL i TP do ustawienia w Core54 oraz wpływ na saldo u brokera.',
+    'ris.locked_t': 'Treść tylko dla klientów Lifetime', 'ris.locked_p': 'Strategie i kalkulator odblokowują się z planem Lifetime.',
+    'ris.loading': 'Ładowanie…', 'ris.error': 'Nie udało się załadować treści. Spróbuj ponownie za chwilę; jeśli problem się powtarza, napisz na info@core54.app.',
+    'player.loading': 'Ładowanie…', 'player.error': 'Nie można odtworzyć filmu:'
+  }
 };
+let lang = 'it';
+const t = (k) => (I18N[lang] && I18N[lang][k] !== undefined) ? I18N[lang][k] : I18N.it[k];
+
+function applicaLingua(l) {
+  lang = LANGS.includes(l) ? l : 'it';
+  document.documentElement.lang = lang;
+  document.title = t('meta.title');
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.getAttribute('data-i18n-html')); });
+  document.querySelectorAll('.lang-note').forEach(el => { el.hidden = !el.textContent; });
+  document.getElementById('langSelect').value = lang;
+  try { localStorage.setItem('core54_lang', lang); } catch (e) {}
+}
+
 
 if (SUPABASE_ANON_KEY === 'INCOLLA_QUI_LA_ANON_KEY_SUPABASE') {
   document.getElementById('configError').style.display = 'block';
@@ -263,25 +375,33 @@ function caricaStrategia() {
 const ALTEZZA_JS = '<script>(function(){function h(){var b=document.body;if(!b)return;var r=b.getBoundingClientRect();var m=parseFloat(getComputedStyle(b).marginBottom)||0;parent.postMessage({c54h:Math.ceil(r.bottom+window.scrollY+m)},"*")}addEventListener("load",h);addEventListener("resize",h);document.addEventListener("click",function(){setTimeout(h,60)});if(window.ResizeObserver){new ResizeObserver(h).observe(document.documentElement)}setTimeout(h,250);setTimeout(h,1200)})();<\/script>';
 
 function conAltezza(html) {
+  // 1) lingua scelta, disponibile al contenuto PRIMA dei suoi script (window.C54_LANG)
+  const LANG_JS = '<script>window.C54_LANG=' + JSON.stringify(lang) + ';<\/script>';
+  const h = html.search(/<head[^>]*>/i);
+  if (h >= 0) { const fine = html.indexOf('>', h) + 1; html = html.slice(0, fine) + LANG_JS + html.slice(fine); }
+  else html = LANG_JS + html;
+  // 2) script che comunica l'altezza reale alla pagina
   const i = html.toLowerCase().lastIndexOf('</body>');
   return i >= 0 ? html.slice(0, i) + ALTEZZA_JS + html.slice(i) : html + ALTEZZA_JS;
 }
 
 async function caricaRiservato(file, contenitore, sfondoCarta) {
   if (!hasLifetimeLocal && !profiloAdmin && !isAdminLocal) {
-    contenitore.innerHTML = '<div class="locked-box"><div class="ico">🔒</div><h3>Contenuto riservato ai clienti Lifetime</h3><p>Strategie e calcolatore si sbloccano con il piano Lifetime.</p></div>';
+    contenitore.innerHTML = `<div class="locked-box"><div class="ico">🔒</div><h3>${t('ris.locked_t')}</h3><p>${t('ris.locked_p')}</p></div>`;
+    contenitore.dataset.file = '';
     return;
   }
-  if (contenitore.dataset.file === file && contenitore.querySelector('iframe')) return; // già mostrato
+  if (contenitore.dataset.file === file && contenitore.dataset.lang === lang && contenitore.querySelector('iframe')) return; // già mostrato
   contenitore.dataset.file = file;
+  contenitore.dataset.lang = lang;
 
   let html = cacheRiservati[file];
   if (!html) {
-    contenitore.innerHTML = '<div class="loading-box">Caricamento…</div>';
+    contenitore.innerHTML = `<div class="loading-box">${t('ris.loading')}</div>`;
     const { data, error } = await sb.storage.from(BUCKET_RISERVATO).download(file);
     if (contenitore.dataset.file !== file) return; // nel frattempo l'utente ha cambiato voce
     if (error || !data) {
-      contenitore.innerHTML = '<div class="err-box">Impossibile caricare il contenuto. Riprova tra poco; se il problema continua scrivi a info@core54.app.</div>';
+      contenitore.innerHTML = `<div class="err-box">${t('ris.error')}</div>`;
       contenitore.dataset.file = '';
       return;
     }
@@ -318,7 +438,7 @@ function renderLista() {
   lista.innerHTML = '';
 
   if (corsoEpisodi.length === 0) {
-    lista.innerHTML = '<div class="empty">Nessun episodio disponibile al momento.</div>';
+    lista.innerHTML = `<div class="empty">${t('corso.empty')}</div>`;
     return;
   }
 
@@ -331,7 +451,7 @@ function renderLista() {
   Array.from(moduli.keys()).sort((a, b) => a - b).forEach(modNum => {
     const h = document.createElement('div');
     h.className = 'modulo-title';
-    h.textContent = `Modulo ${modNum} · ${MODULO_TITOLI[modNum] || ''}`;
+    h.textContent = `${t('corso.modulo')} ${modNum} · ${t('mod.' + modNum) || ''}`;
     lista.appendChild(h);
 
     moduli.get(modNum).forEach(ep => {
@@ -340,7 +460,7 @@ function renderLista() {
       card.className = 'card' + (locked ? ' locked' : '');
       card.innerHTML = `
         <div class="icon">${locked ? '🔒' : '▶'}</div>
-        <div class="titolo">${ep.titolo}</div>
+        <div class="titolo">${ep['titolo_' + lang] || ep.titolo}</div>
         ${ep.gratuito ? '<div class="free-badge">FREE</div>' : ''}
       `;
       card.addEventListener('click', () => apriEpisodio(ep, locked));
@@ -351,13 +471,13 @@ function renderLista() {
 
 async function apriEpisodio(ep, locked) {
   if (locked) {
-    alert('Questo episodio si sblocca con Lifetime. Gli episodi FREE restano sempre disponibili.');
+    alert(t('corso.locked_alert'));
     return;
   }
 
   const box = $('playerBox');
   box.className = ep.modulo === 5 ? 'vert' : 'horiz';
-  box.innerHTML = '<div id="playerLoading">Caricamento…</div>';
+  box.innerHTML = `<div id="playerLoading">${t('player.loading')}</div>`;
   $('playerOverlay').style.display = 'flex';
 
   const { data: { session } } = await sb.auth.getSession();
@@ -369,14 +489,14 @@ async function apriEpisodio(ep, locked) {
         'Authorization': `Bearer ${session.access_token}`,
         'apikey': SUPABASE_ANON_KEY,
       },
-      body: JSON.stringify({ episodio_id: ep.id }),
+      body: JSON.stringify({ episodio_id: ep.id, lang }),
     });
     const json = await resp.json();
     if (!resp.ok) throw new Error(json.error || 'Errore sconosciuto');
 
     box.innerHTML = `<iframe src="${json.embedUrl}" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
   } catch (e) {
-    box.innerHTML = `<div id="playerError">Impossibile riprodurre il video: ${e.message}</div>`;
+    box.innerHTML = `<div id="playerError">${t('player.error')} ${e.message}</div>`;
   }
 }
 
@@ -404,6 +524,18 @@ $('logoutBtn').addEventListener('click', async () => {
   mostraLogin();
 });
 
+$('langSelect').addEventListener('change', (e) => {
+  applicaLingua(e.target.value);
+  if ($('tabs').style.display !== 'none') {
+    renderLista();
+    if (tabAttiva !== 'corso') mostraTab(tabAttiva); // ricarica il contenuto riservato nella nuova lingua
+  }
+});
+
+let linguaSalvata = null;
+try { linguaSalvata = localStorage.getItem('core54_lang'); } catch (e) {}
+const linguaBrowser = (navigator.language || 'it').slice(0, 2).toLowerCase();
+applicaLingua(linguaSalvata || (LANGS.includes(linguaBrowser) ? linguaBrowser : 'it'));
 boot();
 </script>
 </body>
