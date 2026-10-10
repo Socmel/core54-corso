@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>CORE-54 — Corso</title>
+<title>CORE-54 — Area clienti</title>
 <style>
   :root {
     --bg: #050506;
@@ -27,6 +27,7 @@
   header h1 b { color: var(--yellow); }
   #logoutBtn { background: none; border: 1px solid var(--border); color: var(--text2); padding: 8px 14px; border-radius: 8px; cursor: pointer; display: none; }
   main { max-width: 720px; margin: 0 auto; padding: 32px 20px 80px; }
+  main.wide { max-width: 1200px; }
 
   /* Login */
   #loginCard { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 28px; max-width: 380px; margin: 60px auto 0; }
@@ -36,6 +37,17 @@
   #loginCard button { width: 100%; margin-top: 20px; padding: 12px; border: none; border-radius: 8px; background: var(--yellow); color: #111; font-weight: 800; cursor: pointer; font-size: 14px; }
   #loginCard button:disabled { opacity: .6; cursor: default; }
   #loginError { color: var(--danger); font-size: 13px; margin-top: 12px; min-height: 16px; }
+
+  /* Schede principali: Corso / Strategie / Calcolatore */
+  #tabs { display: none; gap: 4px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 4px; width: fit-content; max-width: 100%; margin: 0 auto 28px; overflow-x: auto; }
+  #tabs button { background: none; border: 0; color: var(--text2); font-size: 14px; font-weight: 700; padding: 9px 18px; border-radius: 999px; cursor: pointer; white-space: nowrap; font-family: inherit; }
+  #tabs button:hover { color: var(--yellow); }
+  #tabs button.on { background: var(--yellow); color: #111; }
+  .pane { display: none; }
+  .pane.on { display: block; }
+  .pane-head { margin: 0 0 18px; }
+  .pane-head h2 { font-size: 22px; margin: 0 0 4px; }
+  .pane-head p { font-size: 13.5px; color: var(--text2); margin: 0; }
 
   /* Lista episodi */
   .upsell { background: #2a2510; border: 1px solid #4a3f10; color: var(--text); font-size: 13px; border-radius: 10px; padding: 12px 14px; margin-bottom: 20px; }
@@ -47,6 +59,20 @@
   .free-badge { background: var(--yellow); color: #111; font-size: 10px; font-weight: 800; letter-spacing: .5px; padding: 3px 8px; border-radius: 999px; }
   .empty { color: var(--text2); text-align: center; margin-top: 40px; }
 
+  /* Contenuti riservati (Strategie / Calcolatore) */
+  .sub-switch { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .sub-switch button { background: var(--surface); border: 1px solid var(--border); color: var(--text2); font-size: 13.5px; font-weight: 700; padding: 8px 16px; border-radius: 999px; cursor: pointer; font-family: inherit; }
+  .sub-switch button.on { border-color: var(--yellow); color: var(--yellow); }
+  .frame-wrap { border-radius: 14px; overflow: hidden; }
+  .frame-wrap.paper { background: #fff; border: 1px solid var(--border); }
+  .frame-wrap iframe { display: block; width: 100%; height: 600px; border: 0; background: transparent; }
+  .locked-box { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 36px 24px; text-align: center; }
+  .locked-box .ico { font-size: 30px; margin-bottom: 10px; }
+  .locked-box h3 { margin: 0 0 6px; font-size: 17px; }
+  .locked-box p { margin: 0; color: var(--text2); font-size: 14px; }
+  .loading-box { color: var(--text2); text-align: center; padding: 40px 0; font-size: 14px; }
+  .err-box { color: var(--danger); text-align: center; padding: 30px 0; font-size: 14px; }
+
   /* Player modal */
   #playerOverlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.9); z-index: 100; align-items: center; justify-content: center; flex-direction: column; }
   #playerClose { position: absolute; top: 18px; right: 22px; background: none; border: none; color: #fff; font-size: 28px; cursor: pointer; line-height: 1; }
@@ -56,6 +82,12 @@
   #playerBox iframe { width: 100%; height: 100%; border: 0; border-radius: 8px; }
   #playerLoading { color: var(--text2); font-size: 13px; }
   #playerError { color: var(--danger); font-size: 13px; text-align: center; max-width: 320px; }
+
+  @media (max-width: 480px) {
+    header { padding: 14px 16px; }
+    main { padding: 24px 14px 60px; }
+    #tabs button { padding: 8px 13px; font-size: 13px; }
+  }
 </style>
 </head>
 <body>
@@ -63,11 +95,11 @@
 <div id="configError">⚠ Configurazione mancante: apri index.html e sostituisci SUPABASE_ANON_KEY con la vera anon/public key del progetto Supabase (Project Settings → API). Questa pagina non funziona finché non è impostata.</div>
 
 <header>
-  <h1>CORE-54 — <b>Corso</b></h1>
+  <h1>CORE-54 — <b>Area clienti</b></h1>
   <button id="logoutBtn">Esci</button>
 </header>
 
-<main>
+<main id="main">
   <div id="loginCard">
     <h2>Accedi</h2>
     <label for="email">Email</label>
@@ -78,10 +110,39 @@
     <div id="loginError"></div>
   </div>
 
-  <div id="corsoWrap" style="display:none">
+  <nav id="tabs" role="tablist">
+    <button data-tab="corso" class="on" role="tab">🎓 Corso</button>
+    <button data-tab="strategie" role="tab">🗺️ Strategie</button>
+    <button data-tab="calcolatore" role="tab">🧮 Calcolatore</button>
+  </nav>
+
+  <!-- ═══ CORSO ═══ -->
+  <section class="pane" id="pane-corso">
     <div id="upsell" class="upsell" style="display:none">Gli episodi contrassegnati <b>FREE</b> sono sempre disponibili. Il resto del corso si sblocca con Lifetime.</div>
     <div id="lista"></div>
-  </div>
+  </section>
+
+  <!-- ═══ STRATEGIE ═══ -->
+  <section class="pane" id="pane-strategie">
+    <div class="pane-head">
+      <h2>Mappe strategiche</h2>
+      <p>I percorsi della strategia, fase Sfida e fase Reale.</p>
+    </div>
+    <div class="sub-switch" id="strat-switch">
+      <button data-file="strategia50k.html" class="on">Strategia 50K</button>
+      <button data-file="strategia100k.html">Strategia 100K</button>
+    </div>
+    <div id="strat-body"></div>
+  </section>
+
+  <!-- ═══ CALCOLATORE ═══ -->
+  <section class="pane" id="pane-calcolatore">
+    <div class="pane-head">
+      <h2>Calcolatore SL / TP</h2>
+      <p>Inserisci i dati della prop: ottieni i valori di SL e TP da impostare su Core54 e l'effetto sul saldo del broker.</p>
+    </div>
+    <div id="calc-body"></div>
+  </section>
 </main>
 
 <div id="playerOverlay">
@@ -96,13 +157,19 @@
 // ─── CONFIGURAZIONE — valori dell'app CORE-54, stessi usati dal client mobile ───
 // SUPABASE_URL è pubblico (deriva dal Project ID, già visibile in vari documenti del progetto).
 // SUPABASE_ANON_KEY è la chiave "anon/public" di Supabase (Project Settings → API) — è pensata
-// per stare in chiaro in un client (la stessa gira già nel bundle dell'app mobile), MA questo file
-// arriva con un placeholder: va sostituita PRIMA di pubblicare la pagina, altrimenti il banner
-// rosso in alto resta visibile e il login non funziona (fallisce in modo rumoroso di proposito,
-// non con uno spinner infinito senza spiegazione — lezione del bug del 30/08/2026).
+// per stare in chiaro in un client (la stessa gira già nel bundle dell'app mobile).
 const SUPABASE_URL = 'https://ppyyvmyhprxahiwijyeu.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_T4WiIXTIbQjtSh7IQc0pVQ_Vgg7_gPp';
 const EDGE_FUNCTION_NAME = 'get-video-token';
+
+// Contenuti riservati Lifetime (Strategie + Calcolatore) — 10/10/2026.
+// NON stanno in questo repo (pubblico): vivono nel bucket PRIVATO di Supabase Storage "riservato".
+// Il vero controllo di accesso è la policy di Storage "riservato_select_lifetime" (admin o Lifetime
+// attivo, stessa condizione di get-video-token): a chi non ha diritto il download fallisce lato
+// server, qualunque cosa faccia il browser. Per aggiornare una mappa o il calcolatore basta
+// ricaricare il file con lo STESSO nome nel bucket (Dashboard → Storage → riservato), senza
+// toccare questa pagina.
+const BUCKET_RISERVATO = 'riservato';
 
 const MODULO_TITOLI = {
   1: 'Strategia in sintesi',
@@ -124,6 +191,9 @@ const $ = (id) => document.getElementById(id);
 let corsoEpisodi = [];
 let hasLifetimeLocal = false;
 let isAdminLocal = false;
+let profiloAdmin = false;       // profiles.is_admin — usato SOLO per il messaggio dei contenuti riservati
+const cacheRiservati = {};      // nome file → HTML già scaricato in questa sessione
+let tabAttiva = 'corso';
 
 async function boot() {
   const { data: { session } } = await sb.auth.getSession();
@@ -133,32 +203,111 @@ async function boot() {
 
 function mostraLogin() {
   $('loginCard').style.display = 'block';
-  $('corsoWrap').style.display = 'none';
+  $('tabs').style.display = 'none';
+  document.querySelectorAll('.pane').forEach(p => p.classList.remove('on'));
   $('logoutBtn').style.display = 'none';
+  $('main').classList.remove('wide');
+  Object.keys(cacheRiservati).forEach(k => delete cacheRiservati[k]);
+  $('strat-body').innerHTML = '';
+  $('calc-body').innerHTML = '';
 }
 
 async function mostraCorso(session) {
   $('loginCard').style.display = 'none';
-  $('corsoWrap').style.display = 'block';
+  $('tabs').style.display = 'flex';
   $('logoutBtn').style.display = 'inline-block';
 
   isAdminLocal = session.user?.role === 'admin';
 
-  const [{ data: episodi }, { data: abbonamenti }] = await Promise.all([
+  const [{ data: episodi }, { data: abbonamenti }, { data: profilo }] = await Promise.all([
     sb.from('corso_episodi').select('*').eq('pubblicato', true).order('modulo', { ascending: true }).order('ordine', { ascending: true }),
     sb.from('abbonamenti_utenti').select('tipo, stato_abbonamento').eq('client_id', session.user.id),
+    sb.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle(),
   ]);
 
   corsoEpisodi = episodi || [];
   hasLifetimeLocal = (abbonamenti || []).some(a => a.tipo === 'lifetime' && (a.stato_abbonamento || '').toLowerCase() === 'attivo');
+  profiloAdmin = !!(profilo && profilo.is_admin);
 
   // NOTA: questo controllo lato client serve SOLO per mostrare lucchetti/badge nella UI. Il vero
   // controllo di accesso — quello che conta davvero — vive nella Edge Function get-video-token,
   // interrogata al momento di aprire un episodio: è lì che si decide se il link firmato viene
   // rilasciato o no, non qui.
   renderLista();
+  mostraTab(tabAttiva);
 }
 
+// ─── Schede ───
+function mostraTab(nome) {
+  tabAttiva = nome;
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === nome));
+  document.querySelectorAll('.pane').forEach(p => p.classList.toggle('on', p.id === 'pane-' + nome));
+  $('main').classList.toggle('wide', nome !== 'corso');
+  if (nome === 'strategie') caricaStrategia();
+  if (nome === 'calcolatore') caricaRiservato('calcolatore.html', $('calc-body'), false);
+}
+document.querySelectorAll('#tabs button').forEach(b => b.addEventListener('click', () => mostraTab(b.dataset.tab)));
+
+document.querySelectorAll('#strat-switch button').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('#strat-switch button').forEach(x => x.classList.toggle('on', x === b));
+  caricaStrategia();
+}));
+function caricaStrategia() {
+  const file = document.querySelector('#strat-switch button.on').dataset.file;
+  caricaRiservato(file, $('strat-body'), true);
+}
+
+// Script iniettato nel contenuto: comunica all'area clienti l'altezza reale della pagina, così
+// l'iframe si adatta senza doppie barre di scorrimento. L'iframe è in sandbox "allow-scripts"
+// SENZA "allow-same-origin": il contenuto non può leggere la sessione di login di questa pagina.
+const ALTEZZA_JS = '<script>(function(){function h(){var b=document.body;if(!b)return;var r=b.getBoundingClientRect();var m=parseFloat(getComputedStyle(b).marginBottom)||0;parent.postMessage({c54h:Math.ceil(r.bottom+window.scrollY+m)},"*")}addEventListener("load",h);addEventListener("resize",h);document.addEventListener("click",function(){setTimeout(h,60)});if(window.ResizeObserver){new ResizeObserver(h).observe(document.documentElement)}setTimeout(h,250);setTimeout(h,1200)})();<\/script>';
+
+function conAltezza(html) {
+  const i = html.toLowerCase().lastIndexOf('</body>');
+  return i >= 0 ? html.slice(0, i) + ALTEZZA_JS + html.slice(i) : html + ALTEZZA_JS;
+}
+
+async function caricaRiservato(file, contenitore, sfondoCarta) {
+  if (!hasLifetimeLocal && !profiloAdmin && !isAdminLocal) {
+    contenitore.innerHTML = '<div class="locked-box"><div class="ico">🔒</div><h3>Contenuto riservato ai clienti Lifetime</h3><p>Strategie e calcolatore si sbloccano con il piano Lifetime.</p></div>';
+    return;
+  }
+  if (contenitore.dataset.file === file && contenitore.querySelector('iframe')) return; // già mostrato
+  contenitore.dataset.file = file;
+
+  let html = cacheRiservati[file];
+  if (!html) {
+    contenitore.innerHTML = '<div class="loading-box">Caricamento…</div>';
+    const { data, error } = await sb.storage.from(BUCKET_RISERVATO).download(file);
+    if (contenitore.dataset.file !== file) return; // nel frattempo l'utente ha cambiato voce
+    if (error || !data) {
+      contenitore.innerHTML = '<div class="err-box">Impossibile caricare il contenuto. Riprova tra poco; se il problema continua scrivi a info@core54.app.</div>';
+      contenitore.dataset.file = '';
+      return;
+    }
+    html = await data.text();
+    cacheRiservati[file] = html;
+  }
+
+  const wrap = document.createElement('div');
+  wrap.className = 'frame-wrap' + (sfondoCarta ? ' paper' : '');
+  const frame = document.createElement('iframe');
+  frame.setAttribute('sandbox', 'allow-scripts');
+  frame.setAttribute('title', file);
+  frame.srcdoc = conAltezza(html);
+  wrap.appendChild(frame);
+  contenitore.innerHTML = '';
+  contenitore.appendChild(wrap);
+}
+
+window.addEventListener('message', (e) => {
+  if (!e.data || typeof e.data.c54h !== 'number') return;
+  document.querySelectorAll('.frame-wrap iframe').forEach(f => {
+    if (f.contentWindow === e.source) f.style.height = Math.max(200, e.data.c54h) + 'px';
+  });
+});
+
+// ─── Corso (invariato) ───
 function sbloccato(ep) {
   return isAdminLocal || ep.gratuito || hasLifetimeLocal;
 }
