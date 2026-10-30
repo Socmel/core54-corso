@@ -213,8 +213,9 @@ const BUCKET_RISERVATO = 'riservato';
 
 // Download del Bridge — 30/10/2026. Il setup sta nel bucket PRIVATO "bridge"; la riga unica di
 // public.bridge_rilascio dice versione e nome del file (vedi sql/bridge_download_migration.sql).
-// Chi può scaricare lo decide la policy di Storage "bridge_select_ricorrente" (admin oppure
-// Ricorrente attivo non scaduto = chi può operare): qui un link firmato che fallisce = scheda bloccata.
+// Chi può scaricare lo decide la policy di Storage "bridge_select_clienti" (admin oppure Lifetime o
+// Ricorrente attivo non scaduto, sql/bridge_download_lifetime_migration.sql): qui un link firmato
+// che fallisce = scheda bloccata.
 // Per pubblicare una nuova versione: carica il file nel bucket e aggiorna la riga, senza toccare
 // questa pagina. L'app apre https://corso.core54.app/#download per arrivare dritto a questa scheda.
 const BUCKET_BRIDGE = 'bridge';
@@ -246,7 +247,7 @@ const I18N = {
     'tab.download': '⬇️ Download', 'dl.title': 'Download', 'dl.sub': 'Programmi da installare sul PC per la Modalità Assistita.',
     'dl.versione': 'Versione', 'dl.btn': 'Scarica il Bridge', 'dl.novita': 'Novità',
     'dl.nota': "Se Windows mostra <b>«PC protetto da Windows»</b>: premiamo <b>Ulteriori informazioni</b> e poi <b>Esegui comunque</b>. Per aggiornare basta installare sopra la versione vecchia: il collegamento con l'app resta.",
-    'dl.locked_t': 'Disponibile con il Trading attivo', 'dl.locked_p': 'Il Bridge serve solo a chi opera con CORE-54. Se hai appena attivato il servizio e lo vedi ancora bloccato, scrivi a info@core54.app.',
+    'dl.locked_t': 'Riservato ai clienti CORE-54', 'dl.locked_p': 'Il Bridge si scarica con un abbonamento attivo. Se ti sei appena abbonato e lo vedi ancora bloccato, scrivi a info@core54.app.',
     'dl.err_link': 'Download non riuscito. Riprova; se il problema continua scrivi a info@core54.app.'
   },
   en: {
@@ -267,7 +268,7 @@ const I18N = {
     'tab.download': '⬇️ Download', 'dl.title': 'Download', 'dl.sub': 'Programs to install on your PC for Assisted Mode.',
     'dl.versione': 'Version', 'dl.btn': 'Download the Bridge', 'dl.novita': "What's new",
     'dl.nota': 'If Windows shows <b>"Windows protected your PC"</b>: click <b>More info</b> and then <b>Run anyway</b>. To update, just install over the old version: the link with the app is kept.',
-    'dl.locked_t': 'Available with Trading active', 'dl.locked_p': 'The Bridge is only for those trading with CORE-54. If you have just activated the service and still see it locked, write to info@core54.app.',
+    'dl.locked_t': 'Reserved for CORE-54 clients', 'dl.locked_p': 'The Bridge can be downloaded with an active subscription. If you have just subscribed and still see it locked, write to info@core54.app.',
     'dl.err_link': 'Download failed. Please try again; if the problem persists write to info@core54.app.'
   },
   de: {
@@ -288,7 +289,7 @@ const I18N = {
     'tab.download': '⬇️ Download', 'dl.title': 'Download', 'dl.sub': 'Programme, die du für den Assistierten Modus auf dem PC installierst.',
     'dl.versione': 'Version', 'dl.btn': 'Bridge herunterladen', 'dl.novita': 'Neu',
     'dl.nota': 'Wenn Windows <b>„Der Computer wurde durch Windows geschützt“</b> anzeigt: auf <b>Weitere Informationen</b> und dann auf <b>Trotzdem ausführen</b> klicken. Zum Aktualisieren einfach über die alte Version installieren: die Verbindung mit der App bleibt erhalten.',
-    'dl.locked_t': 'Verfügbar mit aktivem Trading', 'dl.locked_p': 'Die Bridge ist nur für alle, die mit CORE-54 handeln. Wenn du den Dienst gerade aktiviert hast und sie noch gesperrt ist, schreib an info@core54.app.',
+    'dl.locked_t': 'Nur für CORE-54-Kunden', 'dl.locked_p': 'Die Bridge kann mit einem aktiven Abo heruntergeladen werden. Wenn du gerade ein Abo abgeschlossen hast und sie noch gesperrt ist, schreib an info@core54.app.',
     'dl.err_link': 'Download fehlgeschlagen. Versuche es erneut; wenn das Problem bleibt, schreib an info@core54.app.'
   },
   es: {
@@ -309,7 +310,7 @@ const I18N = {
     'tab.download': '⬇️ Descargas', 'dl.title': 'Descargas', 'dl.sub': 'Programas para instalar en el PC para el Modo Asistido.',
     'dl.versione': 'Versión', 'dl.btn': 'Descargar el Bridge', 'dl.novita': 'Novedades',
     'dl.nota': 'Si Windows muestra <b>«Windows protegió su PC»</b>: pulsamos <b>Más información</b> y luego <b>Ejecutar de todas formas</b>. Para actualizar basta con instalar encima de la versión anterior: la conexión con la app se mantiene.',
-    'dl.locked_t': 'Disponible con el Trading activo', 'dl.locked_p': 'El Bridge solo sirve a quien opera con CORE-54. Si acabas de activar el servicio y sigue bloqueado, escribe a info@core54.app.',
+    'dl.locked_t': 'Reservado a los clientes de CORE-54', 'dl.locked_p': 'El Bridge se descarga con una suscripción activa. Si acabas de suscribirte y sigue bloqueado, escribe a info@core54.app.',
     'dl.err_link': 'No se ha podido descargar. Inténtalo de nuevo; si el problema continúa escribe a info@core54.app.'
   },
   pl: {
@@ -330,7 +331,7 @@ const I18N = {
     'tab.download': '⬇️ Pobieranie', 'dl.title': 'Pobieranie', 'dl.sub': 'Programy do zainstalowania na komputerze dla Trybu Wspomaganego.',
     'dl.versione': 'Wersja', 'dl.btn': 'Pobierz Bridge', 'dl.novita': 'Nowości',
     'dl.nota': 'Jeśli Windows pokaże <b>„System Windows ochronił ten komputer”</b>: klikamy <b>Więcej informacji</b>, a potem <b>Uruchom mimo to</b>. Aby zaktualizować, wystarczy zainstalować na starej wersji: połączenie z aplikacją zostaje.',
-    'dl.locked_t': 'Dostępne przy aktywnym Tradingu', 'dl.locked_p': 'Bridge jest potrzebny tylko osobom handlującym z CORE-54. Jeśli właśnie aktywowałeś usługę i nadal widzisz blokadę, napisz na info@core54.app.',
+    'dl.locked_t': 'Tylko dla klientów CORE-54', 'dl.locked_p': 'Bridge można pobrać z aktywną subskrypcją. Jeśli właśnie wykupiłeś subskrypcję i nadal widzisz blokadę, napisz na info@core54.app.',
     'dl.err_link': 'Pobieranie nie powiodło się. Spróbuj ponownie; jeśli problem się powtarza, napisz na info@core54.app.'
   }
 };
