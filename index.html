@@ -91,6 +91,20 @@
   .dl-novita { font-size: 13px; color: var(--text2); margin-top: 14px; line-height: 1.6; }
   .dl-novita b { color: var(--text); }
   .dl-nota { background: #2a2510; border: 1px solid #4a3f10; border-radius: 10px; padding: 11px 13px; margin-top: 14px; font-size: 13px; line-height: 1.6; }
+  /* Requisiti del PC dedicato — 08/11/2026 (tabella di Socmel). Su telefono le colonne vanno una sotto l'altra. */
+  .dl-req { margin-top: 16px; background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--yellow); border-radius: 14px; padding: 16px 18px; }
+  .dl-req h3 { margin: 0 0 4px; font-size: 15px; }
+  .dl-req-intro { font-size: 13px; color: var(--text2); line-height: 1.55; margin: 0 0 10px; }
+  .dl-req-riga { display: grid; grid-template-columns: 120px 1fr 1fr; gap: 12px; font-size: 13px; line-height: 1.5; padding: 8px 0; border-top: 1px solid var(--border); }
+  .dl-req-riga.testa { border-top: 0; padding-top: 0; font-size: 11.5px; font-weight: 800; color: var(--text2); text-transform: uppercase; letter-spacing: .4px; }
+  .dl-req-riga .voce { font-weight: 700; }
+  .dl-req-riga .val { color: var(--text2); }
+  .dl-req-riga .etic { display: none; }
+  @media (max-width: 520px) {
+    .dl-req-riga { grid-template-columns: 1fr; gap: 2px; }
+    .dl-req-riga.testa { display: none; }
+    .dl-req-riga .etic { display: inline; color: var(--text); font-weight: 700; }
+  }
 
   /* Player modal */
   #playerOverlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.9); z-index: 100; align-items: center; justify-content: center; flex-direction: column; }
@@ -246,9 +260,18 @@ const I18N = {
     'player.loading': 'Caricamento…', 'player.error': 'Impossibile riprodurre il video:',
     'tab.download': '⬇️ Download', 'dl.title': 'Download', 'dl.sub': 'Programmi da installare sul PC per la Modalità Assistita.',
     'dl.versione': 'Versione', 'dl.btn': 'Scarica il Bridge', 'dl.novita': 'Novità',
-    'dl.nota': "Se Windows mostra <b>«PC protetto da Windows»</b>: premiamo <b>Ulteriori informazioni</b> e poi <b>Esegui comunque</b>. Per aggiornare basta installare sopra la versione vecchia: il collegamento con l'app resta.",
+    'dl.nota': "Se Windows mostra <b>«PC protetto da Windows»</b>: premiamo <b>Ulteriori informazioni</b> e poi <b>Esegui comunque</b>. Per aggiornare basta premere <b>Aggiorna ora il Bridge sul PC</b> nell'app, oppure installare sopra la versione vecchia: il collegamento con l'app resta.",
     'dl.locked_t': 'Riservato ai clienti CORE-54', 'dl.locked_p': 'Il Bridge si scarica con un abbonamento attivo. Se ti sei appena abbonato e lo vedi ancora bloccato, scrivi a info@core54.app.',
-    'dl.err_link': 'Download non riuscito. Riprova; se il problema continua scrivi a info@core54.app.'
+    'dl.err_link': 'Download non riuscito. Riprova; se il problema continua scrivi a info@core54.app.',
+    'req.title': 'Requisiti del PC dedicato', 'req.intro': 'Per un PC che fa girare il Bridge, 2–3 MetaTrader 5 e Chrome Remote Desktop, acceso 24 ore su 24.',
+    'req.voce': 'Voce', 'req.min': 'Minimo', 'req.cons': 'Consigliato',
+    'req.cpu': 'Processore', 'req.cpu_min': '4 core, turbo da 3,4 GHz in su, PassMark sopra 3500 (es. Intel N95, Core i3 dall’8ª generazione, Ryzen 3000)', 'req.cpu_cons': 'PassMark sopra 5000 (es. Intel N100/N150, Ryzen 5 5000)',
+    'req.ram': 'RAM', 'req.ram_min': '8 GB', 'req.ram_cons': '16 GB, sostituibile (SO-DIMM)',
+    'req.disco': 'Disco', 'req.disco_min': 'SSD da 128 GB (M.2 NVMe o SATA)', 'req.disco_cons': 'SSD da 256–512 GB',
+    'req.os': 'Sistema', 'req.os_min': 'Windows 11 Pro', 'req.os_cons': '—',
+    'req.rete': 'Rete', 'req.rete_min': 'Porta Ethernet (RJ45) collegata via cavo', 'req.rete_cons': '—',
+    'req.alim': 'Alimentazione', 'req.alim_min': '—', 'req.alim_cons': 'Alimentatore esterno; accensione automatica dopo un blackout («Restore on AC»)',
+    'req.monitor': 'Senza monitor', 'req.monitor_min': 'Finta spina HDMI («dummy plug»)', 'req.monitor_cons': '—'
   },
   en: {
     'meta.title': 'CORE-54 — Client area', 'hdr.title': 'Client area', 'hdr.logout': 'Log out',
@@ -267,9 +290,18 @@ const I18N = {
     'player.loading': 'Loading…', 'player.error': 'Unable to play the video:',
     'tab.download': '⬇️ Download', 'dl.title': 'Download', 'dl.sub': 'Programs to install on your PC for Assisted Mode.',
     'dl.versione': 'Version', 'dl.btn': 'Download the Bridge', 'dl.novita': "What's new",
-    'dl.nota': 'If Windows shows <b>"Windows protected your PC"</b>: click <b>More info</b> and then <b>Run anyway</b>. To update, just install over the old version: the link with the app is kept.',
+    'dl.nota': 'If Windows shows <b>"Windows protected your PC"</b>: click <b>More info</b> and then <b>Run anyway</b>. To update, just press <b>Update the Bridge on the PC now</b> in the app, or install over the old version: the link with the app is kept.',
     'dl.locked_t': 'Reserved for CORE-54 clients', 'dl.locked_p': 'The Bridge can be downloaded with an active subscription. If you have just subscribed and still see it locked, write to info@core54.app.',
-    'dl.err_link': 'Download failed. Please try again; if the problem persists write to info@core54.app.'
+    'dl.err_link': 'Download failed. Please try again; if the problem persists write to info@core54.app.',
+    'req.title': 'Dedicated PC requirements', 'req.intro': 'For a PC running the Bridge, 2–3 MetaTrader 5 terminals and Chrome Remote Desktop, switched on 24 hours a day.',
+    'req.voce': 'Item', 'req.min': 'Minimum', 'req.cons': 'Recommended',
+    'req.cpu': 'Processor', 'req.cpu_min': '4 cores, turbo 3.4 GHz or higher, PassMark above 3500 (e.g. Intel N95, Core i3 8th gen or newer, Ryzen 3000)', 'req.cpu_cons': 'PassMark above 5000 (e.g. Intel N100/N150, Ryzen 5 5000)',
+    'req.ram': 'RAM', 'req.ram_min': '8 GB', 'req.ram_cons': '16 GB, replaceable (SO-DIMM)',
+    'req.disco': 'Storage', 'req.disco_min': '128 GB SSD (M.2 NVMe or SATA)', 'req.disco_cons': '256–512 GB SSD',
+    'req.os': 'System', 'req.os_min': 'Windows 11 Pro', 'req.os_cons': '—',
+    'req.rete': 'Network', 'req.rete_min': 'Ethernet port (RJ45) connected by cable', 'req.rete_cons': '—',
+    'req.alim': 'Power', 'req.alim_min': '—', 'req.alim_cons': 'External power supply; automatic power-on after a blackout ("Restore on AC")',
+    'req.monitor': 'No monitor', 'req.monitor_min': 'HDMI dummy plug', 'req.monitor_cons': '—'
   },
   de: {
     'meta.title': 'CORE-54 — Kundenbereich', 'hdr.title': 'Kundenbereich', 'hdr.logout': 'Abmelden',
@@ -288,9 +320,18 @@ const I18N = {
     'player.loading': 'Wird geladen…', 'player.error': 'Video kann nicht abgespielt werden:',
     'tab.download': '⬇️ Download', 'dl.title': 'Download', 'dl.sub': 'Programme, die du für den Assistierten Modus auf dem PC installierst.',
     'dl.versione': 'Version', 'dl.btn': 'Bridge herunterladen', 'dl.novita': 'Neu',
-    'dl.nota': 'Wenn Windows <b>„Der Computer wurde durch Windows geschützt“</b> anzeigt: auf <b>Weitere Informationen</b> und dann auf <b>Trotzdem ausführen</b> klicken. Zum Aktualisieren einfach über die alte Version installieren: die Verbindung mit der App bleibt erhalten.',
+    'dl.nota': 'Wenn Windows <b>„Der Computer wurde durch Windows geschützt“</b> anzeigt: auf <b>Weitere Informationen</b> und dann auf <b>Trotzdem ausführen</b> klicken. Zum Aktualisieren einfach in der App <b>Bridge am PC jetzt aktualisieren</b> tippen oder über die alte Version installieren: die Verbindung mit der App bleibt erhalten.',
     'dl.locked_t': 'Nur für CORE-54-Kunden', 'dl.locked_p': 'Die Bridge kann mit einem aktiven Abo heruntergeladen werden. Wenn du gerade ein Abo abgeschlossen hast und sie noch gesperrt ist, schreib an info@core54.app.',
-    'dl.err_link': 'Download fehlgeschlagen. Versuche es erneut; wenn das Problem bleibt, schreib an info@core54.app.'
+    'dl.err_link': 'Download fehlgeschlagen. Versuche es erneut; wenn das Problem bleibt, schreib an info@core54.app.',
+    'req.title': 'Anforderungen an den eigenen PC', 'req.intro': 'Für einen PC, auf dem die Bridge, 2–3 MetaTrader 5 und Chrome Remote Desktop laufen, rund um die Uhr eingeschaltet.',
+    'req.voce': 'Komponente', 'req.min': 'Minimum', 'req.cons': 'Empfohlen',
+    'req.cpu': 'Prozessor', 'req.cpu_min': '4 Kerne, Turbo ab 3,4 GHz, PassMark über 3500 (z. B. Intel N95, Core i3 ab 8. Generation, Ryzen 3000)', 'req.cpu_cons': 'PassMark über 5000 (z. B. Intel N100/N150, Ryzen 5 5000)',
+    'req.ram': 'RAM', 'req.ram_min': '8 GB', 'req.ram_cons': '16 GB, austauschbar (SO-DIMM)',
+    'req.disco': 'Speicher', 'req.disco_min': 'SSD mit 128 GB (M.2 NVMe oder SATA)', 'req.disco_cons': 'SSD mit 256–512 GB',
+    'req.os': 'System', 'req.os_min': 'Windows 11 Pro', 'req.os_cons': '—',
+    'req.rete': 'Netzwerk', 'req.rete_min': 'Ethernet-Anschluss (RJ45), per Kabel verbunden', 'req.rete_cons': '—',
+    'req.alim': 'Stromversorgung', 'req.alim_min': '—', 'req.alim_cons': 'Externes Netzteil; automatisches Einschalten nach einem Stromausfall („Restore on AC“)',
+    'req.monitor': 'Ohne Monitor', 'req.monitor_min': 'HDMI-Dummy-Stecker („Dummy Plug“)', 'req.monitor_cons': '—'
   },
   es: {
     'meta.title': 'CORE-54 — Área de clientes', 'hdr.title': 'Área de clientes', 'hdr.logout': 'Salir',
@@ -309,9 +350,18 @@ const I18N = {
     'player.loading': 'Cargando…', 'player.error': 'No se puede reproducir el vídeo:',
     'tab.download': '⬇️ Descargas', 'dl.title': 'Descargas', 'dl.sub': 'Programas para instalar en el PC para el Modo Asistido.',
     'dl.versione': 'Versión', 'dl.btn': 'Descargar el Bridge', 'dl.novita': 'Novedades',
-    'dl.nota': 'Si Windows muestra <b>«Windows protegió su PC»</b>: pulsamos <b>Más información</b> y luego <b>Ejecutar de todas formas</b>. Para actualizar basta con instalar encima de la versión anterior: la conexión con la app se mantiene.',
+    'dl.nota': 'Si Windows muestra <b>«Windows protegió su PC»</b>: pulsamos <b>Más información</b> y luego <b>Ejecutar de todas formas</b>. Para actualizar basta con pulsar <b>Actualizar ahora el Bridge en el PC</b> en la app, o instalar encima de la versión anterior: la conexión con la app se mantiene.',
     'dl.locked_t': 'Reservado a los clientes de CORE-54', 'dl.locked_p': 'El Bridge se descarga con una suscripción activa. Si acabas de suscribirte y sigue bloqueado, escribe a info@core54.app.',
-    'dl.err_link': 'No se ha podido descargar. Inténtalo de nuevo; si el problema continúa escribe a info@core54.app.'
+    'dl.err_link': 'No se ha podido descargar. Inténtalo de nuevo; si el problema continúa escribe a info@core54.app.',
+    'req.title': 'Requisitos del PC dedicado', 'req.intro': 'Para un PC que ejecuta el Bridge, 2–3 MetaTrader 5 y Chrome Remote Desktop, encendido las 24 horas.',
+    'req.voce': 'Elemento', 'req.min': 'Mínimo', 'req.cons': 'Recomendado',
+    'req.cpu': 'Procesador', 'req.cpu_min': '4 núcleos, turbo desde 3,4 GHz, PassMark por encima de 3500 (p. ej. Intel N95, Core i3 desde la 8.ª generación, Ryzen 3000)', 'req.cpu_cons': 'PassMark por encima de 5000 (p. ej. Intel N100/N150, Ryzen 5 5000)',
+    'req.ram': 'RAM', 'req.ram_min': '8 GB', 'req.ram_cons': '16 GB, reemplazable (SO-DIMM)',
+    'req.disco': 'Disco', 'req.disco_min': 'SSD de 128 GB (M.2 NVMe o SATA)', 'req.disco_cons': 'SSD de 256–512 GB',
+    'req.os': 'Sistema', 'req.os_min': 'Windows 11 Pro', 'req.os_cons': '—',
+    'req.rete': 'Red', 'req.rete_min': 'Puerto Ethernet (RJ45) conectado por cable', 'req.rete_cons': '—',
+    'req.alim': 'Alimentación', 'req.alim_min': '—', 'req.alim_cons': 'Fuente de alimentación externa; encendido automático tras un apagón («Restore on AC»)',
+    'req.monitor': 'Sin monitor', 'req.monitor_min': 'Conector HDMI simulado («dummy plug»)', 'req.monitor_cons': '—'
   },
   pl: {
     'meta.title': 'CORE-54 — Strefa klienta', 'hdr.title': 'Strefa klienta', 'hdr.logout': 'Wyloguj',
@@ -330,9 +380,18 @@ const I18N = {
     'player.loading': 'Ładowanie…', 'player.error': 'Nie można odtworzyć filmu:',
     'tab.download': '⬇️ Pobieranie', 'dl.title': 'Pobieranie', 'dl.sub': 'Programy do zainstalowania na komputerze dla Trybu Wspomaganego.',
     'dl.versione': 'Wersja', 'dl.btn': 'Pobierz Bridge', 'dl.novita': 'Nowości',
-    'dl.nota': 'Jeśli Windows pokaże <b>„System Windows ochronił ten komputer”</b>: klikamy <b>Więcej informacji</b>, a potem <b>Uruchom mimo to</b>. Aby zaktualizować, wystarczy zainstalować na starej wersji: połączenie z aplikacją zostaje.',
+    'dl.nota': 'Jeśli Windows pokaże <b>„System Windows ochronił ten komputer”</b>: klikamy <b>Więcej informacji</b>, a potem <b>Uruchom mimo to</b>. Aby zaktualizować, wystarczy w aplikacji nacisnąć <b>Zaktualizuj teraz Bridge na komputerze</b> albo zainstalować na starej wersji: połączenie z aplikacją zostaje.',
     'dl.locked_t': 'Tylko dla klientów CORE-54', 'dl.locked_p': 'Bridge można pobrać z aktywną subskrypcją. Jeśli właśnie wykupiłeś subskrypcję i nadal widzisz blokadę, napisz na info@core54.app.',
-    'dl.err_link': 'Pobieranie nie powiodło się. Spróbuj ponownie; jeśli problem się powtarza, napisz na info@core54.app.'
+    'dl.err_link': 'Pobieranie nie powiodło się. Spróbuj ponownie; jeśli problem się powtarza, napisz na info@core54.app.',
+    'req.title': 'Wymagania dla dedykowanego komputera', 'req.intro': 'Dla komputera, na którym działa Bridge, 2–3 MetaTrader 5 i Pulpit zdalny Chrome, włączonego 24 godziny na dobę.',
+    'req.voce': 'Element', 'req.min': 'Minimum', 'req.cons': 'Zalecane',
+    'req.cpu': 'Procesor', 'req.cpu_min': '4 rdzenie, turbo od 3,4 GHz, PassMark powyżej 3500 (np. Intel N95, Core i3 od 8. generacji, Ryzen 3000)', 'req.cpu_cons': 'PassMark powyżej 5000 (np. Intel N100/N150, Ryzen 5 5000)',
+    'req.ram': 'RAM', 'req.ram_min': '8 GB', 'req.ram_cons': '16 GB, wymienna (SO-DIMM)',
+    'req.disco': 'Dysk', 'req.disco_min': 'SSD 128 GB (M.2 NVMe lub SATA)', 'req.disco_cons': 'SSD 256–512 GB',
+    'req.os': 'System', 'req.os_min': 'Windows 11 Pro', 'req.os_cons': '—',
+    'req.rete': 'Sieć', 'req.rete_min': 'Port Ethernet (RJ45) podłączony kablem', 'req.rete_cons': '—',
+    'req.alim': 'Zasilanie', 'req.alim_min': '—', 'req.alim_cons': 'Zewnętrzny zasilacz; automatyczne włączenie po zaniku prądu („Restore on AC”)',
+    'req.monitor': 'Bez monitora', 'req.monitor_min': 'Zaślepka HDMI („dummy plug”)', 'req.monitor_cons': '—'
   }
 };
 let lang = 'it';
@@ -433,12 +492,13 @@ async function caricaDownload() {
   const { data: ril, error } = await sb.from('bridge_rilascio')
     .select('versione, file_nome, dimensione_mb, novita, pubblicato_il').eq('id', 1).maybeSingle();
   if (mio !== dlCarico) return;
-  if (error || !ril) { box.innerHTML = `<div class="err-box">${t('ris.error')}</div>`; return; }
+  if (error || !ril) { box.innerHTML = `<div class="err-box">${t('ris.error')}</div>` + htmlRequisiti(); return; }
   // Prova del permesso: se la policy di Storage non concede il file, la firma fallisce.
   const prova = await sb.storage.from(BUCKET_BRIDGE).createSignedUrl(ril.file_nome, 30);
   if (mio !== dlCarico) return;
   if (prova.error || !prova.data) {
-    box.innerHTML = `<div class="locked-box"><div class="ico">🔒</div><h3>${t('dl.locked_t')}</h3><p>${t('dl.locked_p')}</p></div>`;
+    // Requisiti visibili anche senza abbonamento: il PC si sceglie prima di comprarlo.
+    box.innerHTML = `<div class="locked-box"><div class="ico">🔒</div><h3>${t('dl.locked_t')}</h3><p>${t('dl.locked_p')}</p></div>` + htmlRequisiti();
     return;
   }
   const data = ril.pubblicato_il ? new Date(ril.pubblicato_il).toLocaleDateString(lang) : '';
@@ -457,8 +517,27 @@ async function caricaDownload() {
       <div class="dl-err" id="dl-err"></div>
       ${novita ? `<div class="dl-novita"><b>${t('dl.novita')} ${esc(ril.versione)}:</b> ${esc(novita)}</div>` : ''}
       <div class="dl-nota">${t('dl.nota')}</div>
-    </div>`;
+    </div>` + htmlRequisiti();
   $('dl-btn').addEventListener('click', () => scaricaBridge(ril.file_nome));
+}
+
+// Requisiti del PC dedicato (08/11/2026, tabella di Socmel): voce, minimo, consigliato. Testi solo da
+// T (nostri, nessun dato dell'utente), quindi niente esc().
+const RIGHE_REQ = ['cpu', 'ram', 'disco', 'os', 'rete', 'alim', 'monitor'];
+function htmlRequisiti() {
+  const riga = (k) => `
+      <div class="dl-req-riga">
+        <div class="voce">${t('req.' + k)}</div>
+        <div class="val"><span class="etic">${t('req.min')}: </span>${t('req.' + k + '_min')}</div>
+        <div class="val"><span class="etic">${t('req.cons')}: </span>${t('req.' + k + '_cons')}</div>
+      </div>`;
+  return `
+    <div class="dl-req">
+      <h3>${t('req.title')}</h3>
+      <p class="dl-req-intro">${t('req.intro')}</p>
+      <div class="dl-req-riga testa"><div>${t('req.voce')}</div><div>${t('req.min')}</div><div>${t('req.cons')}</div></div>
+      ${RIGHE_REQ.map(riga).join('')}
+    </div>`;
 }
 
 async function scaricaBridge(fileNome) {
