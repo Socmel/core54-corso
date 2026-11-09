@@ -91,20 +91,11 @@
   .dl-novita { font-size: 13px; color: var(--text2); margin-top: 14px; line-height: 1.6; }
   .dl-novita b { color: var(--text); }
   .dl-nota { background: #2a2510; border: 1px solid #4a3f10; border-radius: 10px; padding: 11px 13px; margin-top: 14px; font-size: 13px; line-height: 1.6; }
-  /* Requisiti del PC dedicato — 08/11/2026 (tabella di Socmel). Su telefono le colonne vanno una sotto l'altra. */
-  .dl-req { margin-top: 16px; background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--yellow); border-radius: 14px; padding: 16px 18px; }
-  .dl-req h3 { margin: 0 0 4px; font-size: 15px; }
-  .dl-req-intro { font-size: 13px; color: var(--text2); line-height: 1.55; margin: 0 0 10px; }
-  .dl-req-riga { display: grid; grid-template-columns: 120px 1fr 1fr; gap: 12px; font-size: 13px; line-height: 1.5; padding: 8px 0; border-top: 1px solid var(--border); }
-  .dl-req-riga.testa { border-top: 0; padding-top: 0; font-size: 11.5px; font-weight: 800; color: var(--text2); text-transform: uppercase; letter-spacing: .4px; }
-  .dl-req-riga .voce { font-weight: 700; }
-  .dl-req-riga .val { color: var(--text2); }
-  .dl-req-riga .etic { display: none; }
-  @media (max-width: 520px) {
-    .dl-req-riga { grid-template-columns: 1fr; gap: 2px; }
-    .dl-req-riga.testa { display: none; }
-    .dl-req-riga .etic { display: inline; color: var(--text); font-weight: 700; }
-  }
+  /* Sezioni della scheda Download (Bridge / Istruzioni PC / PDF Strategie) — 09/11/2026 */
+  .dl-sez { margin: 26px 0 10px; font-size: 12.5px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase; color: var(--text2); }
+  .dl-sez:first-child { margin-top: 0; }
+  .dl-card + .dl-card { margin-top: 10px; }
+  .dl-desc { font-size: 13px; color: var(--text2); line-height: 1.55; margin-top: 12px; }
 
   /* Player modal */
   #playerOverlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.9); z-index: 100; align-items: center; justify-content: center; flex-direction: column; }
@@ -258,7 +249,9 @@ const I18N = {
     'ris.locked_t': 'Contenuto riservato ai clienti Lifetime', 'ris.locked_p': 'Strategie e calcolatore si sbloccano con il piano Lifetime.',
     'ris.loading': 'Caricamento…', 'ris.error': 'Impossibile caricare il contenuto. Riprova tra poco; se il problema continua scrivi a info@core54.app.',
     'player.loading': 'Caricamento…', 'player.error': 'Impossibile riprodurre il video:',
-    'tab.download': '⬇️ Download', 'dl.title': 'Download', 'dl.sub': 'Programmi da installare sul PC per la Modalità Assistita.',
+    'tab.download': '⬇️ Download', 'dl.title': 'Download', 'dl.sub': 'Bridge, istruzioni per il PC e PDF delle strategie.',
+    'dl.sec_bridge': 'Bridge', 'dl.sec_pc': 'Istruzioni per configurare il PC', 'dl.sec_strat': 'PDF Strategie', 'dl.btn_pdf': 'Scarica il PDF',
+    'dl.locked_pc': 'Le istruzioni per il PC si scaricano con un abbonamento attivo.', 'dl.locked_strat': 'I PDF delle strategie si sbloccano con il piano Lifetime.',
     'dl.versione': 'Versione', 'dl.btn': 'Scarica il Bridge', 'dl.novita': 'Novità',
     'dl.nota': "Se Windows mostra <b>«PC protetto da Windows»</b>: premiamo <b>Ulteriori informazioni</b> e poi <b>Esegui comunque</b>. Per aggiornare basta premere <b>Aggiorna ora il Bridge sul PC</b> nell'app, oppure installare sopra la versione vecchia: il collegamento con l'app resta.",
     'dl.locked_t': 'Riservato ai clienti CORE-54', 'dl.locked_p': 'Il Bridge si scarica con un abbonamento attivo. Se ti sei appena abbonato e lo vedi ancora bloccato, scrivi a info@core54.app.',
@@ -288,7 +281,9 @@ const I18N = {
     'ris.locked_t': 'Content reserved for Lifetime clients', 'ris.locked_p': 'Strategies and calculator unlock with the Lifetime plan.',
     'ris.loading': 'Loading…', 'ris.error': 'Unable to load the content. Please try again shortly; if the problem persists write to info@core54.app.',
     'player.loading': 'Loading…', 'player.error': 'Unable to play the video:',
-    'tab.download': '⬇️ Download', 'dl.title': 'Download', 'dl.sub': 'Programs to install on your PC for Assisted Mode.',
+    'tab.download': '⬇️ Download', 'dl.title': 'Download', 'dl.sub': 'Bridge, PC setup guide and strategy PDFs.',
+    'dl.sec_bridge': 'Bridge', 'dl.sec_pc': 'PC setup guide', 'dl.sec_strat': 'Strategy PDFs', 'dl.btn_pdf': 'Download the PDF',
+    'dl.locked_pc': 'The PC setup guide can be downloaded with an active subscription.', 'dl.locked_strat': 'Strategy PDFs are unlocked with the Lifetime plan.',
     'dl.versione': 'Version', 'dl.btn': 'Download the Bridge', 'dl.novita': "What's new",
     'dl.nota': 'If Windows shows <b>"Windows protected your PC"</b>: click <b>More info</b> and then <b>Run anyway</b>. To update, just press <b>Update the Bridge on the PC now</b> in the app, or install over the old version: the link with the app is kept.',
     'dl.locked_t': 'Reserved for CORE-54 clients', 'dl.locked_p': 'The Bridge can be downloaded with an active subscription. If you have just subscribed and still see it locked, write to info@core54.app.',
@@ -481,9 +476,30 @@ function mostraTab(nome) {
   if (nome === 'download') caricaDownload();
 }
 
-// ─── Download (Bridge) ───
+// ─── Download: Bridge, istruzioni per il PC, PDF delle strategie ───
 const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 let dlCarico = 0;   // numero dell'ultima richiesta: una risposta più vecchia (cambio lingua/scheda) si scarta
+
+// PDF scaricabili. Il file sta in un bucket PRIVATO di Supabase Storage e si scarica con un link firmato:
+// a decidere chi può è la policy del bucket. Istruzioni PC: stesso bucket e stessa regola del Bridge ("bridge");
+// Strategie: bucket "riservato" (solo Lifetime e admin). Per aggiungere una strategia basta una riga qui sotto
+// e il file nel bucket (Dashboard > Storage).
+const PDF_PC = { bucket: BUCKET_BRIDGE, file: 'CORE-54_Mini_PC_Assistita.pdf', nome: 'CORE-54 · Istruzioni per configurare il PC', desc: 'Come scegliere e preparare il PC per la Modalità Assistita: requisiti, installazione, accesso da remoto.' };
+const PDF_STRATEGIE = [
+  { bucket: BUCKET_RISERVATO, file: 'CORE-54_Vademecum_FundedNext_100K.pdf', nome: 'FundedNext · Stellar 1-Step · 100K', desc: 'Regole, acquisto, configurazione di CORE-54 e mappe della strategia.' },
+];
+
+const boxBloccato = (tit, txt) => `<div class="locked-box"><div class="ico">🔒</div><h3>${tit}</h3><p>${txt}</p></div>`;
+const cardPdf = (p) => `
+    <div class="dl-card">
+      <div class="dl-head">
+        <div class="dl-ico">📄</div>
+        <div><div class="dl-nome">${esc(p.nome)}</div><div class="dl-meta">PDF</div></div>
+      </div>
+      <div class="dl-desc">${esc(p.desc)}</div>
+      <button class="dl-btn" data-bucket="${esc(p.bucket)}" data-file="${esc(p.file)}">⬇ ${t('dl.btn_pdf')}</button>
+      <div class="dl-err"></div>
+    </div>`;
 
 async function caricaDownload() {
   const box = $('dl-body');
@@ -492,19 +508,25 @@ async function caricaDownload() {
   const { data: ril, error } = await sb.from('bridge_rilascio')
     .select('versione, file_nome, dimensione_mb, novita, pubblicato_il').eq('id', 1).maybeSingle();
   if (mio !== dlCarico) return;
-  if (error || !ril) { box.innerHTML = `<div class="err-box">${t('ris.error')}</div>` + htmlRequisiti(); return; }
   // Prova del permesso: se la policy di Storage non concede il file, la firma fallisce.
-  const prova = await sb.storage.from(BUCKET_BRIDGE).createSignedUrl(ril.file_nome, 30);
-  if (mio !== dlCarico) return;
-  if (prova.error || !prova.data) {
-    // Requisiti visibili anche senza abbonamento: il PC si sceglie prima di comprarlo.
-    box.innerHTML = `<div class="locked-box"><div class="ico">🔒</div><h3>${t('dl.locked_t')}</h3><p>${t('dl.locked_p')}</p></div>` + htmlRequisiti();
-    return;
+  let bridgeOk = false;
+  if (!error && ril) {
+    const prova = await sb.storage.from(BUCKET_BRIDGE).createSignedUrl(ril.file_nome, 30);
+    if (mio !== dlCarico) return;
+    bridgeOk = !prova.error && !!prova.data;
   }
-  const data = ril.pubblicato_il ? new Date(ril.pubblicato_il).toLocaleDateString(lang) : '';
-  const mb = ril.dimensione_mb ? ` · ${esc(ril.dimensione_mb)} MB` : '';
-  const novita = (ril.novita && (ril.novita[lang] || ril.novita.it)) || '';
-  box.innerHTML = `
+  const strategieOk = hasLifetimeLocal || profiloAdmin || isAdminLocal;
+
+  let bridge;
+  if (error || !ril) {
+    bridge = `<div class="err-box">${t('ris.error')}</div>`;
+  } else if (!bridgeOk) {
+    bridge = boxBloccato(t('dl.locked_t'), t('dl.locked_p'));
+  } else {
+    const data = ril.pubblicato_il ? new Date(ril.pubblicato_il).toLocaleDateString(lang) : '';
+    const mb = ril.dimensione_mb ? ` · ${esc(ril.dimensione_mb)} MB` : '';
+    const novita = (ril.novita && (ril.novita[lang] || ril.novita.it)) || '';
+    bridge = `
     <div class="dl-card">
       <div class="dl-head">
         <div class="dl-ico">🖥️</div>
@@ -517,40 +539,29 @@ async function caricaDownload() {
       <div class="dl-err" id="dl-err"></div>
       ${novita ? `<div class="dl-novita"><b>${t('dl.novita')} ${esc(ril.versione)}:</b> ${esc(novita)}</div>` : ''}
       <div class="dl-nota">${t('dl.nota')}</div>
-    </div>` + htmlRequisiti();
-  $('dl-btn').addEventListener('click', () => scaricaBridge(ril.file_nome));
-}
-
-// Requisiti del PC dedicato (08/11/2026, tabella di Socmel): voce, minimo, consigliato. Testi solo da
-// T (nostri, nessun dato dell'utente), quindi niente esc().
-const RIGHE_REQ = ['cpu', 'ram', 'disco', 'os', 'rete', 'alim', 'monitor'];
-function htmlRequisiti() {
-  const riga = (k) => `
-      <div class="dl-req-riga">
-        <div class="voce">${t('req.' + k)}</div>
-        <div class="val"><span class="etic">${t('req.min')}: </span>${t('req.' + k + '_min')}</div>
-        <div class="val"><span class="etic">${t('req.cons')}: </span>${t('req.' + k + '_cons')}</div>
-      </div>`;
-  return `
-    <div class="dl-req">
-      <h3>${t('req.title')}</h3>
-      <p class="dl-req-intro">${t('req.intro')}</p>
-      <div class="dl-req-riga testa"><div>${t('req.voce')}</div><div>${t('req.min')}</div><div>${t('req.cons')}</div></div>
-      ${RIGHE_REQ.map(riga).join('')}
     </div>`;
+  }
+  const pc = bridgeOk ? cardPdf(PDF_PC) : boxBloccato(t('dl.locked_t'), t('dl.locked_pc'));
+  const strat = strategieOk ? PDF_STRATEGIE.map(cardPdf).join('') : boxBloccato(t('ris.locked_t'), t('dl.locked_strat'));
+  box.innerHTML = `
+    <h3 class="dl-sez">${t('dl.sec_bridge')}</h3>${bridge}
+    <h3 class="dl-sez">${t('dl.sec_pc')}</h3>${pc}
+    <h3 class="dl-sez">${t('dl.sec_strat')}</h3>${strat}`;
+  if (bridgeOk) $('dl-btn').addEventListener('click', () => scaricaFile($('dl-btn'), BUCKET_BRIDGE, ril.file_nome));
+  box.querySelectorAll('button[data-file]').forEach(b => b.addEventListener('click', () => scaricaFile(b, b.dataset.bucket, b.dataset.file)));
 }
 
-async function scaricaBridge(fileNome) {
-  const btn = $('dl-btn');
-  $('dl-err').textContent = '';
+async function scaricaFile(btn, bucket, fileNome) {
+  const err = btn.nextElementSibling;
+  if (err) err.textContent = '';
   btn.disabled = true;
   try {
     // Link nuovo a ogni clic (scade in DURATA_LINK_SEC): mai un link vecchio rimasto nella pagina.
-    const { data, error } = await sb.storage.from(BUCKET_BRIDGE).createSignedUrl(fileNome, DURATA_LINK_SEC, { download: true });
-    if (error || !data) { $('dl-err').textContent = t('dl.err_link'); return; }
+    const { data, error } = await sb.storage.from(bucket).createSignedUrl(fileNome, DURATA_LINK_SEC, { download: true });
+    if (error || !data) { if (err) err.textContent = t('dl.err_link'); return; }
     window.location.href = data.signedUrl;
   } catch (e) {
-    $('dl-err').textContent = t('dl.err_link');
+    if (err) err.textContent = t('dl.err_link');
   } finally {
     btn.disabled = false;
   }
