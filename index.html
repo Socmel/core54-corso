@@ -22,13 +22,20 @@
     display: none; background: var(--danger); color: #fff; font-weight: 700;
     padding: 14px 18px; text-align: center; position: sticky; top: 0; z-index: 50;
   }
-  header { display: flex; align-items: center; justify-content: space-between; padding: 18px 24px; border-bottom: 1px solid var(--border); }
+  header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px 16px; padding: 14px 24px; border-bottom: 1px solid var(--border); }
   header h1 { font-size: 18px; margin: 0; letter-spacing: .5px; }
   header h1 b { color: var(--yellow); }
   .hdr-right { display: flex; align-items: center; gap: 10px; }
-  #langSelect { appearance: none; -webkit-appearance: none; background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%239a9aa2'/%3E%3C/svg%3E") no-repeat right 9px center; border: 1px solid var(--border); color: var(--text2); font-size: 13px; font-weight: 700; padding: 8px 24px 8px 11px; border-radius: 8px; cursor: pointer; font-family: inherit; }
-  #langSelect:hover, #langSelect:focus { border-color: var(--yellow); color: var(--yellow); outline: none; }
-  #langSelect option { background: var(--surface); color: var(--text); }
+  /* Selettore lingua: la freccia apre le altre lingue a fianco (non sotto) */
+  #langSelect { display: none; }
+  .langbox { display: flex; align-items: center; gap: 6px; }
+  .lang-opts { display: none; gap: 4px; }
+  .langbox.open .lang-opts { display: flex; }
+  .lang-opts button, .lang-cur { font-family: inherit; background: var(--surface); border: 1px solid var(--border); color: var(--text2); font-size: 13px; font-weight: 700; padding: 8px 11px; border-radius: 8px; cursor: pointer; }
+  .lang-cur { color: var(--text); }
+  .lang-opts button:hover, .lang-cur:hover { border-color: var(--yellow); color: var(--yellow); }
+  .lang-cur .ch { display: inline-block; margin-right: 4px; transition: transform .15s; }
+  .langbox.open .lang-cur .ch { transform: rotate(180deg); }
   .lang-note { font-size: 12.5px; color: var(--text2); margin: -8px 0 16px; }
   #logoutBtn { background: none; border: 1px solid var(--border); color: var(--text2); padding: 8px 14px; border-radius: 8px; cursor: pointer; display: none; }
   main { max-width: 720px; margin: 0 auto; padding: 32px 20px 80px; }
@@ -44,7 +51,7 @@
   #loginError { color: var(--danger); font-size: 13px; margin-top: 12px; min-height: 16px; }
 
   /* Schede principali: Corso / Strategie / Calcolatore */
-  #tabs { display: none; gap: 4px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 4px; width: fit-content; max-width: 100%; margin: 0 auto 28px; overflow-x: auto; }
+  #tabs { display: none; gap: 4px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 4px; width: fit-content; max-width: 100%; margin: 0; overflow-x: auto; }
   #tabs button { background: none; border: 0; color: var(--text2); font-size: 14px; font-weight: 700; padding: 9px 18px; border-radius: 999px; cursor: pointer; white-space: nowrap; font-family: inherit; }
   #tabs button:hover { color: var(--yellow); }
   #tabs button.on { background: var(--yellow); color: #111; }
@@ -91,11 +98,22 @@
   .dl-novita { font-size: 13px; color: var(--text2); margin-top: 14px; line-height: 1.6; }
   .dl-novita b { color: var(--text); }
   .dl-nota { background: #2a2510; border: 1px solid #4a3f10; border-radius: 10px; padding: 11px 13px; margin-top: 14px; font-size: 13px; line-height: 1.6; }
-  /* Sezioni della scheda Download (Bridge / Istruzioni PC / PDF Strategie) — 09/11/2026 */
-  .dl-sez { margin: 26px 0 10px; font-size: 12.5px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase; color: var(--text2); }
-  .dl-sez:first-child { margin-top: 0; }
-  .dl-card + .dl-card { margin-top: 10px; }
-  .dl-desc { font-size: 13px; color: var(--text2); line-height: 1.55; margin-top: 12px; }
+  /* Scheda Download: elenco compatto, una riga per file — 09/11/2026 */
+  .dl-grp { margin: 24px 0 8px; font-size: 11px; font-weight: 800; letter-spacing: .8px; text-transform: uppercase; color: var(--text2); }
+  .dl-grp:first-child { margin-top: 0; }
+  .dl-list { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--surface); }
+  .dl-item + .dl-item { border-top: 1px solid var(--border); }
+  .dl-row { display: flex; align-items: center; gap: 12px; padding: 13px 14px; }
+  .dl-n { flex: 1; min-width: 0; }
+  .dl-t { font-size: 14px; font-weight: 700; }
+  .dl-m { font-size: 12.5px; color: var(--text2); margin-top: 2px; line-height: 1.45; }
+  .dl-bt { background: var(--yellow); color: #111; border: 0; border-radius: 8px; padding: 8px 15px; font-weight: 800; font-size: 13px; cursor: pointer; font-family: inherit; white-space: nowrap; }
+  .dl-bt:disabled { opacity: .6; cursor: default; }
+  .dl-row.lock { opacity: .6; }
+  .dl-row.lock .dl-bt { background: none; border: 1px solid var(--border); color: var(--text2); cursor: default; }
+  .dl-item .dl-err { padding: 0 14px 12px; }
+  .dl-det summary { cursor: pointer; font-size: 12.5px; color: var(--text2); padding: 0 14px 12px 60px; }
+  .dl-det .dl-in { padding: 0 14px 14px; }
 
   /* Player modal */
   #playerOverlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.9); z-index: 100; align-items: center; justify-content: center; flex-direction: column; }
@@ -107,8 +125,9 @@
   #playerLoading { color: var(--text2); font-size: 13px; }
   #playerError { color: var(--danger); font-size: 13px; text-align: center; max-width: 320px; }
 
+  @media (max-width: 860px) { #tabs { order: 3; width: 100%; flex: 1 0 100%; } }
   @media (max-width: 480px) {
-    header { padding: 14px 16px; }
+    header { padding: 12px 16px; }
     main { padding: 24px 14px 60px; }
     #tabs button { padding: 8px 13px; font-size: 13px; }
   }
@@ -120,14 +139,24 @@
 
 <header>
   <h1>CORE-54 — <b data-i18n="hdr.title">Area clienti</b></h1>
+  <nav id="tabs" role="tablist">
+    <button data-tab="corso" class="on" role="tab" data-i18n="tab.corso">🎓 Corso</button>
+    <button data-tab="strategie" role="tab" data-i18n="tab.strategie">🗺️ Strategie</button>
+    <button data-tab="calcolatore" role="tab" data-i18n="tab.calc">🧮 Calcolatore</button>
+    <button data-tab="download" role="tab" data-i18n="tab.download">⬇️ Download</button>
+  </nav>
   <div class="hdr-right">
-    <select id="langSelect" aria-label="Lingua / Language">
+    <div class="langbox" id="langBox">
+      <div class="lang-opts" id="langOpts"></div>
+      <button type="button" class="lang-cur" id="langCur" aria-expanded="false" aria-label="Lingua / Language"><span class="ch">&#8249;</span><span id="langCurTxt">IT</span></button>
+          <select id="langSelect" aria-label="Lingua / Language">
       <option value="it">IT</option>
       <option value="en">EN</option>
       <option value="de">DE</option>
       <option value="es">ES</option>
       <option value="pl">PL</option>
     </select>
+    </div>
     <button id="logoutBtn" data-i18n="hdr.logout">Esci</button>
   </div>
 </header>
@@ -142,13 +171,6 @@
     <button id="loginBtn" data-i18n="login.btn">Entra</button>
     <div id="loginError"></div>
   </div>
-
-  <nav id="tabs" role="tablist">
-    <button data-tab="corso" class="on" role="tab" data-i18n="tab.corso">🎓 Corso</button>
-    <button data-tab="strategie" role="tab" data-i18n="tab.strategie">🗺️ Strategie</button>
-    <button data-tab="calcolatore" role="tab" data-i18n="tab.calc">🧮 Calcolatore</button>
-    <button data-tab="download" role="tab" data-i18n="tab.download">⬇️ Download</button>
-  </nav>
 
   <!-- ═══ CORSO ═══ -->
   <section class="pane" id="pane-corso">
@@ -250,7 +272,7 @@ const I18N = {
     'ris.loading': 'Caricamento…', 'ris.error': 'Impossibile caricare il contenuto. Riprova tra poco; se il problema continua scrivi a info@core54.app.',
     'player.loading': 'Caricamento…', 'player.error': 'Impossibile riprodurre il video:',
     'tab.download': '⬇️ Download', 'dl.title': 'Download', 'dl.sub': 'Bridge, istruzioni per il PC e PDF delle strategie.',
-    'dl.sec_bridge': 'Bridge', 'dl.sec_pc': 'Istruzioni per configurare il PC', 'dl.sec_strat': 'PDF Strategie', 'dl.btn_pdf': 'Scarica il PDF',
+    'dl.sec_bridge': 'Programma', 'dl.sec_pc': 'Guide', 'dl.sec_strat': 'PDF Strategie', 'dl.btn_row': 'Scarica', 'dl.det': 'Novità e istruzioni di installazione',
     'dl.locked_pc': 'Le istruzioni per il PC si scaricano con un abbonamento attivo.', 'dl.locked_strat': 'I PDF delle strategie si sbloccano con il piano Lifetime.',
     'dl.versione': 'Versione', 'dl.btn': 'Scarica il Bridge', 'dl.novita': 'Novità',
     'dl.nota': "Se Windows mostra <b>«PC protetto da Windows»</b>: premiamo <b>Ulteriori informazioni</b> e poi <b>Esegui comunque</b>. Per aggiornare basta premere <b>Aggiorna ora il Bridge sul PC</b> nell'app, oppure installare sopra la versione vecchia: il collegamento con l'app resta.",
@@ -282,7 +304,7 @@ const I18N = {
     'ris.loading': 'Loading…', 'ris.error': 'Unable to load the content. Please try again shortly; if the problem persists write to info@core54.app.',
     'player.loading': 'Loading…', 'player.error': 'Unable to play the video:',
     'tab.download': '⬇️ Download', 'dl.title': 'Download', 'dl.sub': 'Bridge, PC setup guide and strategy PDFs.',
-    'dl.sec_bridge': 'Bridge', 'dl.sec_pc': 'PC setup guide', 'dl.sec_strat': 'Strategy PDFs', 'dl.btn_pdf': 'Download the PDF',
+    'dl.sec_bridge': 'Program', 'dl.sec_pc': 'Guides', 'dl.sec_strat': 'Strategy PDFs', 'dl.btn_row': 'Download', 'dl.det': "What's new and install notes",
     'dl.locked_pc': 'The PC setup guide can be downloaded with an active subscription.', 'dl.locked_strat': 'Strategy PDFs are unlocked with the Lifetime plan.',
     'dl.versione': 'Version', 'dl.btn': 'Download the Bridge', 'dl.novita': "What's new",
     'dl.nota': 'If Windows shows <b>"Windows protected your PC"</b>: click <b>More info</b> and then <b>Run anyway</b>. To update, just press <b>Update the Bridge on the PC now</b> in the app, or install over the old version: the link with the app is kept.',
@@ -313,7 +335,9 @@ const I18N = {
     'ris.locked_t': 'Inhalt nur für Lifetime-Kunden', 'ris.locked_p': 'Strategien und Rechner werden mit dem Lifetime-Plan freigeschaltet.',
     'ris.loading': 'Wird geladen…', 'ris.error': 'Inhalt konnte nicht geladen werden. Versuche es gleich noch einmal; wenn das Problem bleibt, schreib an info@core54.app.',
     'player.loading': 'Wird geladen…', 'player.error': 'Video kann nicht abgespielt werden:',
-    'tab.download': '⬇️ Download', 'dl.title': 'Download', 'dl.sub': 'Programme, die du für den Assistierten Modus auf dem PC installierst.',
+    'tab.download': '⬇️ Download', 'dl.title': 'Download', 'dl.sub': 'Bridge, Anleitung für den PC und Strategie-PDFs.',
+    'dl.sec_bridge': 'Programm', 'dl.sec_pc': 'Anleitungen', 'dl.sec_strat': 'Strategie-PDFs', 'dl.btn_row': 'Herunterladen', 'dl.det': 'Neuerungen und Installationshinweise',
+    'dl.locked_pc': 'Die Anleitung für den PC gibt es mit einem aktiven Abo.', 'dl.locked_strat': 'Die Strategie-PDFs werden mit dem Lifetime-Plan freigeschaltet.',
     'dl.versione': 'Version', 'dl.btn': 'Bridge herunterladen', 'dl.novita': 'Neu',
     'dl.nota': 'Wenn Windows <b>„Der Computer wurde durch Windows geschützt“</b> anzeigt: auf <b>Weitere Informationen</b> und dann auf <b>Trotzdem ausführen</b> klicken. Zum Aktualisieren einfach in der App <b>Bridge am PC jetzt aktualisieren</b> tippen oder über die alte Version installieren: die Verbindung mit der App bleibt erhalten.',
     'dl.locked_t': 'Nur für CORE-54-Kunden', 'dl.locked_p': 'Die Bridge kann mit einem aktiven Abo heruntergeladen werden. Wenn du gerade ein Abo abgeschlossen hast und sie noch gesperrt ist, schreib an info@core54.app.',
@@ -343,7 +367,9 @@ const I18N = {
     'ris.locked_t': 'Contenido reservado a clientes Lifetime', 'ris.locked_p': 'Las estrategias y la calculadora se desbloquean con el plan Lifetime.',
     'ris.loading': 'Cargando…', 'ris.error': 'No se ha podido cargar el contenido. Inténtalo de nuevo en breve; si el problema continúa escribe a info@core54.app.',
     'player.loading': 'Cargando…', 'player.error': 'No se puede reproducir el vídeo:',
-    'tab.download': '⬇️ Descargas', 'dl.title': 'Descargas', 'dl.sub': 'Programas para instalar en el PC para el Modo Asistido.',
+    'tab.download': '⬇️ Descargas', 'dl.title': 'Descargas', 'dl.sub': 'Bridge, guía del PC y PDF de las estrategias.',
+    'dl.sec_bridge': 'Programa', 'dl.sec_pc': 'Guías', 'dl.sec_strat': 'PDF de estrategias', 'dl.btn_row': 'Descargar', 'dl.det': 'Novedades y notas de instalación',
+    'dl.locked_pc': 'La guía del PC se descarga con una suscripción activa.', 'dl.locked_strat': 'Los PDF de las estrategias se desbloquean con el plan Lifetime.',
     'dl.versione': 'Versión', 'dl.btn': 'Descargar el Bridge', 'dl.novita': 'Novedades',
     'dl.nota': 'Si Windows muestra <b>«Windows protegió su PC»</b>: pulsamos <b>Más información</b> y luego <b>Ejecutar de todas formas</b>. Para actualizar basta con pulsar <b>Actualizar ahora el Bridge en el PC</b> en la app, o instalar encima de la versión anterior: la conexión con la app se mantiene.',
     'dl.locked_t': 'Reservado a los clientes de CORE-54', 'dl.locked_p': 'El Bridge se descarga con una suscripción activa. Si acabas de suscribirte y sigue bloqueado, escribe a info@core54.app.',
@@ -373,7 +399,9 @@ const I18N = {
     'ris.locked_t': 'Treść tylko dla klientów Lifetime', 'ris.locked_p': 'Strategie i kalkulator odblokowują się z planem Lifetime.',
     'ris.loading': 'Ładowanie…', 'ris.error': 'Nie udało się załadować treści. Spróbuj ponownie za chwilę; jeśli problem się powtarza, napisz na info@core54.app.',
     'player.loading': 'Ładowanie…', 'player.error': 'Nie można odtworzyć filmu:',
-    'tab.download': '⬇️ Pobieranie', 'dl.title': 'Pobieranie', 'dl.sub': 'Programy do zainstalowania na komputerze dla Trybu Wspomaganego.',
+    'tab.download': '⬇️ Pobieranie', 'dl.title': 'Pobieranie', 'dl.sub': 'Bridge, instrukcja dla komputera i PDF-y strategii.',
+    'dl.sec_bridge': 'Program', 'dl.sec_pc': 'Instrukcje', 'dl.sec_strat': 'PDF-y strategii', 'dl.btn_row': 'Pobierz', 'dl.det': 'Nowości i uwagi o instalacji',
+    'dl.locked_pc': 'Instrukcję dla komputera pobierzesz z aktywną subskrypcją.', 'dl.locked_strat': 'PDF-y strategii odblokowuje plan Lifetime.',
     'dl.versione': 'Wersja', 'dl.btn': 'Pobierz Bridge', 'dl.novita': 'Nowości',
     'dl.nota': 'Jeśli Windows pokaże <b>„System Windows ochronił ten komputer”</b>: klikamy <b>Więcej informacji</b>, a potem <b>Uruchom mimo to</b>. Aby zaktualizować, wystarczy w aplikacji nacisnąć <b>Zaktualizuj teraz Bridge na komputerze</b> albo zainstalować na starej wersji: połączenie z aplikacją zostaje.',
     'dl.locked_t': 'Tylko dla klientów CORE-54', 'dl.locked_p': 'Bridge można pobrać z aktywną subskrypcją. Jeśli właśnie wykupiłeś subskrypcję i nadal widzisz blokadę, napisz na info@core54.app.',
@@ -400,6 +428,7 @@ function applicaLingua(l) {
   document.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.getAttribute('data-i18n-html')); });
   document.querySelectorAll('.lang-note').forEach(el => { el.hidden = !el.textContent; });
   document.getElementById('langSelect').value = lang;
+  aggiornaLingueUI();
   try { localStorage.setItem('core54_lang', lang); } catch (e) {}
 }
 
@@ -489,17 +518,14 @@ const PDF_STRATEGIE = [
   { bucket: BUCKET_RISERVATO, file: 'CORE-54_Vademecum_FundedNext_100K.pdf', nome: 'FundedNext · Stellar 1-Step · 100K', desc: 'Regole, acquisto, configurazione di CORE-54 e mappe della strategia.' },
 ];
 
-const boxBloccato = (tit, txt) => `<div class="locked-box"><div class="ico">🔒</div><h3>${tit}</h3><p>${txt}</p></div>`;
-const cardPdf = (p) => `
-    <div class="dl-card">
-      <div class="dl-head">
-        <div class="dl-ico">📄</div>
-        <div><div class="dl-nome">${esc(p.nome)}</div><div class="dl-meta">PDF</div></div>
-      </div>
-      <div class="dl-desc">${esc(p.desc)}</div>
-      <button class="dl-btn" data-bucket="${esc(p.bucket)}" data-file="${esc(p.file)}">⬇ ${t('dl.btn_pdf')}</button>
-      <div class="dl-err"></div>
-    </div>`;
+const rigaFile = (ico, nome, meta, bottone, bloccata) => `
+      <div class="dl-row${bloccata ? ' lock' : ''}">
+        <div class="dl-ico">${ico}</div>
+        <div class="dl-n"><div class="dl-t">${esc(nome)}</div><div class="dl-m">${meta}</div></div>
+        ${bottone}
+      </div>`;
+const bottonePdf = (p) => `<button class="dl-bt" data-bucket="${esc(p.bucket)}" data-file="${esc(p.file)}">${t('dl.btn_row')}</button>`;
+const bloccato = '<button class="dl-bt" disabled aria-label="locked">🔒</button>';
 
 async function caricaDownload() {
   const box = $('dl-body');
@@ -519,40 +545,34 @@ async function caricaDownload() {
 
   let bridge;
   if (error || !ril) {
-    bridge = `<div class="err-box">${t('ris.error')}</div>`;
+    bridge = `<div class="dl-item"><div class="err-box">${t('ris.error')}</div></div>`;
   } else if (!bridgeOk) {
-    bridge = boxBloccato(t('dl.locked_t'), t('dl.locked_p'));
+    bridge = `<div class="dl-item">${rigaFile('🖥️', 'CORE-54 Bridge', t('dl.locked_p'), bloccato, true)}</div>`;
   } else {
     const data = ril.pubblicato_il ? new Date(ril.pubblicato_il).toLocaleDateString(lang) : '';
     const mb = ril.dimensione_mb ? ` · ${esc(ril.dimensione_mb)} MB` : '';
     const novita = (ril.novita && (ril.novita[lang] || ril.novita.it)) || '';
-    bridge = `
-    <div class="dl-card">
-      <div class="dl-head">
-        <div class="dl-ico">🖥️</div>
-        <div>
-          <div class="dl-nome">CORE-54 Bridge</div>
-          <div class="dl-meta">${t('dl.versione')} ${esc(ril.versione)}${data ? ' · ' + esc(data) : ''} · Windows 10/11${mb}</div>
-        </div>
-      </div>
-      <button class="dl-btn" id="dl-btn">⬇ ${t('dl.btn')}</button>
+    bridge = `<div class="dl-item">${rigaFile('🖥️', 'CORE-54 Bridge',
+      `${t('dl.versione')} ${esc(ril.versione)}${data ? ' · ' + esc(data) : ''} · Windows 10/11${mb}`,
+      `<button class="dl-bt" id="dl-btn">${t('dl.btn_row')}</button>`, false)}
       <div class="dl-err" id="dl-err"></div>
-      ${novita ? `<div class="dl-novita"><b>${t('dl.novita')} ${esc(ril.versione)}:</b> ${esc(novita)}</div>` : ''}
-      <div class="dl-nota">${t('dl.nota')}</div>
-    </div>`;
+      <details class="dl-det"><summary>${t('dl.det')}</summary><div class="dl-in">
+        ${novita ? `<div class="dl-novita" style="margin-top:0"><b>${t('dl.novita')} ${esc(ril.versione)}:</b> ${esc(novita)}</div>` : ''}
+        <div class="dl-nota">${t('dl.nota')}</div></div></details></div>`;
   }
-  const pc = bridgeOk ? cardPdf(PDF_PC) : boxBloccato(t('dl.locked_t'), t('dl.locked_pc'));
-  const strat = strategieOk ? PDF_STRATEGIE.map(cardPdf).join('') : boxBloccato(t('ris.locked_t'), t('dl.locked_strat'));
+  const pc = `<div class="dl-item">${rigaFile('📄', PDF_PC.nome, bridgeOk ? esc(PDF_PC.desc) : t('dl.locked_pc'), bridgeOk ? bottonePdf(PDF_PC) : bloccato, !bridgeOk)}<div class="dl-err"></div></div>`;
+  const strat = PDF_STRATEGIE.map(p => `<div class="dl-item">${rigaFile('📄', p.nome, strategieOk ? esc(p.desc) : t('dl.locked_strat'), strategieOk ? bottonePdf(p) : bloccato, !strategieOk)}<div class="dl-err"></div></div>`).join('');
   box.innerHTML = `
-    <h3 class="dl-sez">${t('dl.sec_bridge')}</h3>${bridge}
-    <h3 class="dl-sez">${t('dl.sec_pc')}</h3>${pc}
-    <h3 class="dl-sez">${t('dl.sec_strat')}</h3>${strat}`;
+    <div class="dl-grp">${t('dl.sec_bridge')}</div><div class="dl-list">${bridge}</div>
+    <div class="dl-grp">${t('dl.sec_pc')}</div><div class="dl-list">${pc}</div>
+    <div class="dl-grp">${t('dl.sec_strat')}</div><div class="dl-list">${strat}</div>`;
   if (bridgeOk) $('dl-btn').addEventListener('click', () => scaricaFile($('dl-btn'), BUCKET_BRIDGE, ril.file_nome));
   box.querySelectorAll('button[data-file]').forEach(b => b.addEventListener('click', () => scaricaFile(b, b.dataset.bucket, b.dataset.file)));
 }
 
 async function scaricaFile(btn, bucket, fileNome) {
-  const err = btn.nextElementSibling;
+  const item = btn.closest('.dl-item');
+  const err = item && item.querySelector('.dl-err');
   if (err) err.textContent = '';
   btn.disabled = true;
   try {
@@ -731,6 +751,24 @@ $('logoutBtn').addEventListener('click', async () => {
   await sb.auth.signOut();
   mostraLogin();
 });
+
+function aggiornaLingueUI() {
+  $('langCurTxt').textContent = lang.toUpperCase();
+  $('langOpts').innerHTML = LANGS.filter(l => l !== lang).map(l => `<button type="button" data-l="${l}">${l.toUpperCase()}</button>`).join('');
+}
+function apriLingue(aperto) {
+  $('langBox').classList.toggle('open', aperto);
+  $('langCur').setAttribute('aria-expanded', aperto ? 'true' : 'false');
+}
+$('langCur').addEventListener('click', () => apriLingue(!$('langBox').classList.contains('open')));
+$('langOpts').addEventListener('click', (e) => {
+  const b = e.target.closest('button[data-l]');
+  if (!b) return;
+  apriLingue(false);
+  $('langSelect').value = b.dataset.l;
+  $('langSelect').dispatchEvent(new Event('change'));
+});
+document.addEventListener('click', (e) => { if (!e.target.closest('#langBox')) apriLingue(false); });
 
 $('langSelect').addEventListener('change', (e) => {
   applicaLingua(e.target.value);
