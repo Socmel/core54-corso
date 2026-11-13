@@ -1,866 +1,791 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CORE-54 — Accesso in anteprima</title>
-<meta name="description" content="CORE-54: un metodo strutturato per costruire una seconda entrata, con la serietà di un business vero. Guarda le prime lezioni gratuite e richiedi l'accesso in anteprima.">
-
-<!-- Pagina NON pubblica: niente indicizzazione finché non c'è il via libera legale (vedi CORE-54_Compliance_Legale.md). Condividere solo il link diretto. -->
-<meta name="robots" content="noindex, nofollow, noarchive">
-
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23FFDD00'/%3E%3Ctext x='32' y='40' font-family='Arial,Helvetica,sans-serif' font-weight='800' font-size='22' fill='%230A0B0E' text-anchor='middle'%3E54%3C/text%3E%3C/svg%3E">
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
-
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>CORE-54 — Area clienti</title>
 <style>
-  :root{
-    --bg:#050506; --surface:#101114; --surface2:#1B1D22; --line:#1F232B;
-    --txt:#F9FAFB; --muted:#9CA3AF; --muted2:#D1D5DB;
-    --gold:#FFDD00; --gold2:#FFE94D; --on-gold:#0A0B0E;
-    --radius:16px; --radius-lg:24px;
-    --maxw:960px;
+  :root {
+    --bg: #050506;
+    --surface: #101012;
+    --surface2: #17171a;
+    --border: #2a2a2e;
+    --yellow: #FFDD00;
+    --text: #f4f4f5;
+    --text2: #9a9aa2;
+    --danger: #ff4d4f;
   }
-  *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{
-    margin:0; background:var(--bg); color:var(--txt);
-    font-family:Poppins,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
-    line-height:1.55; -webkit-font-smoothing:antialiased;
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+  #configError {
+    display: none; background: var(--danger); color: #fff; font-weight: 700;
+    padding: 14px 18px; text-align: center; position: sticky; top: 0; z-index: 50;
   }
-  img{max-width:100%;display:block}
-  a{color:inherit}
-  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 20px}
-  section{padding:64px 0}
-  h1,h2,h3{font-weight:800; line-height:1.2; margin:0 0 14px}
-  h2{font-size:clamp(24px,4vw,32px)}
-  p{color:var(--muted2); margin:0 0 16px}
-  .eyebrow{
-    display:inline-block; font-size:12.5px; font-weight:700; letter-spacing:.06em;
-    text-transform:uppercase; color:var(--on-gold); background:var(--gold);
-    padding:5px 12px; border-radius:999px; margin-bottom:16px;
+  header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px 16px; padding: 14px 24px; border-bottom: 1px solid var(--border); }
+  header h1 { font-size: 18px; margin: 0; letter-spacing: .5px; }
+  header h1 b { color: var(--yellow); }
+  .hdr-right { display: flex; align-items: center; gap: 10px; }
+  /* Selettore lingua: la freccia apre le altre lingue a fianco (non sotto) */
+  #langSelect { display: none; }
+  .langbox { display: flex; align-items: center; gap: 6px; }
+  .lang-opts { display: none; gap: 4px; }
+  .langbox.open .lang-opts { display: flex; }
+  .lang-opts button, .lang-cur { font-family: inherit; background: var(--surface); border: 1px solid var(--border); color: var(--text2); font-size: 13px; font-weight: 700; padding: 8px 11px; border-radius: 8px; cursor: pointer; }
+  .lang-cur { color: var(--text); }
+  .lang-opts button:hover, .lang-cur:hover { border-color: var(--yellow); color: var(--yellow); }
+  .lang-cur .ch { display: inline-block; margin-right: 4px; transition: transform .15s; }
+  .langbox.open .lang-cur .ch { transform: rotate(180deg); }
+  .lang-note { font-size: 12.5px; color: var(--text2); margin: -8px 0 16px; }
+  #logoutBtn { background: none; border: 1px solid var(--border); color: var(--text2); padding: 8px 14px; border-radius: 8px; cursor: pointer; display: none; }
+  main { max-width: 720px; margin: 0 auto; padding: 32px 20px 80px; }
+  main.wide { max-width: 1200px; }
+
+  /* Login */
+  #loginCard { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 28px; max-width: 380px; margin: 60px auto 0; }
+  #loginCard h2 { margin-top: 0; font-size: 16px; }
+  #loginCard label { display: block; font-size: 13px; color: var(--text2); margin: 14px 0 6px; }
+  #loginCard input { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); color: var(--text); font-size: 14px; }
+  #loginCard button { width: 100%; margin-top: 20px; padding: 12px; border: none; border-radius: 8px; background: var(--yellow); color: #111; font-weight: 800; cursor: pointer; font-size: 14px; }
+  #loginCard button:disabled { opacity: .6; cursor: default; }
+  #loginError { color: var(--danger); font-size: 13px; margin-top: 12px; min-height: 16px; }
+
+  /* Schede principali: Corso / Strategie / Calcolatore */
+  #tabs { display: none; gap: 4px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 4px; width: fit-content; max-width: 100%; margin: 0; overflow-x: auto; }
+  #tabs button { background: none; border: 0; color: var(--text2); font-size: 14px; font-weight: 700; padding: 9px 18px; border-radius: 999px; cursor: pointer; white-space: nowrap; font-family: inherit; }
+  #tabs button:hover { color: var(--yellow); }
+  #tabs button.on { background: var(--yellow); color: #111; }
+  .pane { display: none; }
+  .pane.on { display: block; }
+  .pane-head { margin: 0 0 18px; }
+  .pane-head h2 { font-size: 22px; margin: 0 0 4px; }
+  .pane-head p { font-size: 13.5px; color: var(--text2); margin: 0; }
+
+  /* Lista episodi */
+  .upsell { background: #2a2510; border: 1px solid #4a3f10; color: var(--text); font-size: 13px; border-radius: 10px; padding: 12px 14px; margin-bottom: 20px; }
+  .modulo-title { color: var(--yellow); font-size: 11px; font-weight: 800; letter-spacing: .8px; text-transform: uppercase; margin: 26px 0 10px; }
+  .card { display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 8px; cursor: pointer; }
+  .card.locked { opacity: .55; cursor: not-allowed; }
+  .card .icon { width: 22px; text-align: center; flex-shrink: 0; }
+  .card .titolo { flex: 1; font-size: 14px; font-weight: 600; }
+  .free-badge { background: var(--yellow); color: #111; font-size: 10px; font-weight: 800; letter-spacing: .5px; padding: 3px 8px; border-radius: 999px; }
+  .empty { color: var(--text2); text-align: center; margin-top: 40px; }
+
+  /* Contenuti riservati (Strategie / Calcolatore) */
+  .sub-switch { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .sub-switch button { background: var(--surface); border: 1px solid var(--border); color: var(--text2); font-size: 13.5px; font-weight: 700; padding: 8px 16px; border-radius: 999px; cursor: pointer; font-family: inherit; }
+  .sub-switch button.on { border-color: var(--yellow); color: var(--yellow); }
+  .frame-wrap { border-radius: 14px; overflow: hidden; }
+  .frame-wrap.paper { background: #fff; border: 1px solid var(--border); }
+  .frame-wrap iframe { display: block; width: 100%; height: 600px; border: 0; background: transparent; }
+  .locked-box { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 36px 24px; text-align: center; }
+  .locked-box .ico { font-size: 30px; margin-bottom: 10px; }
+  .locked-box h3 { margin: 0 0 6px; font-size: 17px; }
+  .locked-box p { margin: 0; color: var(--text2); font-size: 14px; }
+  .loading-box { color: var(--text2); text-align: center; padding: 40px 0; font-size: 14px; }
+  .err-box { color: var(--danger); text-align: center; padding: 30px 0; font-size: 14px; }
+
+  /* Download (Bridge) — 30/10/2026 */
+  #dl-body { max-width: 560px; }
+  .dl-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px; }
+  .dl-head { display: flex; align-items: center; gap: 12px; }
+  .dl-ico { width: 42px; height: 42px; border-radius: 10px; background: #2a2510; border: 1px solid #4a3f10; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+  .dl-nome { font-size: 15px; font-weight: 700; }
+  .dl-meta { font-size: 12.5px; color: var(--text2); margin-top: 2px; }
+  .dl-btn { display: block; width: 100%; margin-top: 16px; padding: 12px; border: none; border-radius: 8px; background: var(--yellow); color: #111; font-weight: 800; font-size: 14px; cursor: pointer; font-family: inherit; }
+  .dl-btn:disabled { opacity: .6; cursor: default; }
+  .dl-err { color: var(--danger); font-size: 13px; margin-top: 10px; min-height: 0; }
+  .dl-novita { font-size: 13px; color: var(--text2); margin-top: 14px; line-height: 1.6; }
+  .dl-novita b { color: var(--text); }
+  .dl-nota { background: #2a2510; border: 1px solid #4a3f10; border-radius: 10px; padding: 11px 13px; margin-top: 14px; font-size: 13px; line-height: 1.6; }
+  /* Scheda Download: elenco compatto, una riga per file — 09/11/2026 */
+  .dl-grp { margin: 24px 0 8px; font-size: 11px; font-weight: 800; letter-spacing: .8px; text-transform: uppercase; color: var(--text2); }
+  .dl-grp:first-child { margin-top: 0; }
+  .dl-list { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--surface); }
+  .dl-item + .dl-item { border-top: 1px solid var(--border); }
+  .dl-row { display: flex; align-items: center; gap: 12px; padding: 13px 14px; }
+  .dl-n { flex: 1; min-width: 0; }
+  .dl-t { font-size: 14px; font-weight: 700; }
+  .dl-m { font-size: 12.5px; color: var(--text2); margin-top: 2px; line-height: 1.45; }
+  .dl-bt { background: var(--yellow); color: #111; border: 0; border-radius: 8px; padding: 8px 15px; font-weight: 800; font-size: 13px; cursor: pointer; font-family: inherit; white-space: nowrap; }
+  .dl-bt:disabled { opacity: .6; cursor: default; }
+  .dl-row.lock { opacity: .6; }
+  .dl-row.lock .dl-bt { background: none; border: 1px solid var(--border); color: var(--text2); cursor: default; }
+  .dl-item .dl-err { padding: 0 14px 12px; }
+  .dl-det summary { cursor: pointer; font-size: 12.5px; color: var(--text2); padding: 0 14px 12px 60px; }
+  .dl-det .dl-in { padding: 0 14px 14px; }
+
+  /* Player modal */
+  #playerOverlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.9); z-index: 100; align-items: center; justify-content: center; flex-direction: column; }
+  #playerClose { position: absolute; top: 18px; right: 22px; background: none; border: none; color: #fff; font-size: 28px; cursor: pointer; line-height: 1; }
+  #playerBox { position: relative; }
+  #playerBox.horiz { width: min(92vw, 960px); aspect-ratio: 16 / 9; }
+  #playerBox.vert { width: min(50vh, 92vw); aspect-ratio: 1080 / 1920; max-height: 88vh; }
+  #playerBox iframe { width: 100%; height: 100%; border: 0; border-radius: 8px; }
+  #playerLoading { color: var(--text2); font-size: 13px; }
+  #playerError { color: var(--danger); font-size: 13px; text-align: center; max-width: 320px; }
+
+  @media (max-width: 860px) { #tabs { order: 3; width: 100%; flex: 1 0 100%; } }
+  @media (max-width: 480px) {
+    header { padding: 12px 16px; }
+    main { padding: 24px 14px 60px; }
+    #tabs button { padding: 8px 13px; font-size: 13px; }
   }
-
-  /* Header */
-  header{position:sticky; top:0; z-index:20; backdrop-filter:blur(10px);
-    background:rgba(5,5,6,.85); border-bottom:1px solid var(--line)}
-  header .wrap{display:flex; align-items:center; justify-content:space-between; padding:14px 20px}
-  .logo{display:flex; align-items:center; gap:8px; font-weight:800; font-size:18px; text-decoration:none}
-  .logo .badge{background:var(--gold); color:var(--on-gold); border-radius:8px; padding:3px 8px; font-weight:800}
-  header nav{display:flex; gap:22px; font-size:14.5px; font-weight:600}
-  header nav a{text-decoration:none; color:var(--muted2); opacity:.85}
-  header nav a:hover{opacity:1; color:var(--gold)}
-
-  /* Buttons */
-  .btn{
-    display:inline-flex; align-items:center; justify-content:center; gap:8px;
-    padding:14px 26px; border-radius:999px; font-weight:700; font-size:15.5px;
-    text-decoration:none; border:1px solid transparent; cursor:pointer; transition:transform .15s ease;
-  }
-  .btn:active{transform:scale(.97)}
-  .btn-primary{background:var(--gold); color:var(--on-gold)}
-  .btn-primary:hover{background:var(--gold2)}
-  .btn-ghost{background:transparent; color:var(--txt); border-color:var(--line)}
-  .btn-ghost:hover{border-color:var(--gold); color:var(--gold)}
-  .btn-block{width:100%}
-
-  /* Hero */
-  .hero{padding:48px 0 40px}
-  .hero h1{font-size:clamp(28px,5.2vw,44px); max-width:100%}
-  .hero .lead{font-size:18px; max-width:100%}
-  .hero-actions{display:flex; gap:14px; flex-wrap:wrap; margin-top:22px}
-  .hero-note{margin-top:14px; font-size:13px; color:var(--muted)}
-
-  /* Form richiesta accesso */
-  .access-form{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-lg); padding:30px; max-width:640px}
-  .form-row{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px}
-  @media (max-width:560px){ .form-row{grid-template-columns:1fr} }
-  .field label{display:block; font-size:13px; font-weight:600; color:var(--muted2); margin-bottom:6px}
-  .field input, .field select, .field textarea{
-    width:100%; background:var(--surface2); border:1px solid var(--line); border-radius:10px;
-    color:var(--txt); font-family:inherit; font-size:14.5px; padding:11px 13px;
-  }
-  .field input:focus, .field select:focus, .field textarea:focus{outline:2px solid var(--gold); outline-offset:1px}
-  .field.full{margin-bottom:14px}
-  .field textarea{resize:vertical; min-height:88px}
-  .field-hint{display:block; font-size:12px; color:var(--muted); margin-top:5px}
-  .field-err{display:none; font-size:12.5px; color:#ff8080; margin-top:5px}
-  .field-err.show{display:block}
-  .field input.invalid, .field select.invalid{border-color:#ff8080}
-  .honeypot{position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden}
-  .form-msg{margin-top:14px; font-size:13.5px}
-  .form-msg.ok{color:var(--gold); font-size:19px; font-weight:700; line-height:1.5}
-  .form-msg.err{color:#ff8080}
-
-  /* Come funziona */
-  .steps{display:grid; grid-template-columns:repeat(3,1fr); gap:18px}
-  @media (max-width:760px){ .steps{grid-template-columns:1fr} }
-  .step-card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:24px}
-  .step-num{width:34px; height:34px; border-radius:10px; background:var(--surface2); color:var(--gold);
-    display:flex; align-items:center; justify-content:center; font-weight:800; margin-bottom:14px}
-  .step-card h3{font-size:17px; margin-bottom:8px}
-  .step-card p{font-size:14.5px; margin:0}
-
-  /* Video */
-  .video-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:18px}
-  .video-card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden}
-  .video-frame{position:relative; aspect-ratio:16/9; background:#000}
-  .video-frame img{width:100%; height:100%; object-fit:cover; opacity:.75}
-  .video-frame video{width:100%; height:100%; object-fit:cover; display:block}
-  .play-btn{
-    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-    background:transparent; border:0; cursor:pointer; padding:0;
-  }
-  .play-btn .circle{
-    width:56px; height:56px; border-radius:50%; background:var(--gold);
-    display:flex; align-items:center; justify-content:center; box-shadow:0 6px 20px rgba(0,0,0,.4);
-  }
-  .play-btn svg{margin-left:3px}
-  .video-meta{padding:16px}
-  .video-meta .tag{font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--gold)}
-  .video-meta h3{font-size:15px; margin:6px 0 0}
-
-  /* Prezzi */
-  .price-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px}
-  @media (max-width:680px){ .price-grid{grid-template-columns:1fr} }
-  .price-card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-lg); padding:30px}
-  .price-card.featured{border-color:var(--gold)}
-  .price-card .plan-tag{font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--gold); margin-bottom:6px; display:block}
-  .price-card .amount{font-size:36px; font-weight:800; margin:4px 0 4px}
-  .price-card .amount small{font-size:15px; font-weight:600; color:var(--muted)}
-  .price-card .sub{font-size:13.5px; color:var(--muted); margin-bottom:18px}
-  .price-list{list-style:none; margin:0 0 8px; padding:0; display:flex; flex-direction:column; gap:10px}
-  .price-list li{display:flex; gap:10px; align-items:flex-start; font-size:14px; color:var(--muted2)}
-  .price-list li span.check{color:var(--gold); font-weight:800}
-  .price-note{font-size:12.5px; color:var(--muted); margin-top:16px}
-
-  /* Download */
-  .dl-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px}
-  @media (max-width:640px){ .dl-grid{grid-template-columns:1fr} }
-  .dl-card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-lg); padding:28px; text-align:center}
-  .dl-card .icon{font-size:30px; margin-bottom:10px}
-  .dl-card h3{font-size:18px; margin-bottom:6px}
-  .dl-card p{font-size:14px; min-height:42px}
-  .dl-card .status{font-size:12.5px; color:var(--muted); margin-top:10px}
-
-  /* Trust */
-  .trust-list{display:grid; grid-template-columns:1fr 1fr; gap:14px 28px; margin-top:8px}
-  @media (max-width:640px){ .trust-list{grid-template-columns:1fr} }
-  .trust-item{display:flex; gap:10px; align-items:flex-start; font-size:14.5px; color:var(--muted2)}
-  .trust-item .check{color:var(--gold); font-weight:800; flex:0 0 auto}
-
-  /* Footer */
-  footer{border-top:1px solid var(--line); padding:40px 0 60px}
-  footer .disclaimer{font-size:12.5px; color:var(--muted); max-width:760px}
-  footer .disclaimer strong{color:var(--muted2)}
-  footer .bottom-row{display:flex; justify-content:space-between; align-items:center; margin-top:24px; flex-wrap:wrap; gap:10px}
-  footer .contact{font-size:13.5px; font-weight:600; text-decoration:none; color:var(--gold)}
-  footer .copy{font-size:12.5px; color:var(--muted)}
-
-  .section-head{max-width:600px; margin-bottom:36px}
-
-  /* ═══ Header: menu + selettore lingua ═══ */
-  header .right{display:flex; align-items:center; gap:22px}
-  @media (max-width:760px){ header nav{display:none} }
-  .lang-select{appearance:none; -webkit-appearance:none; background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%239CA3AF'/%3E%3C/svg%3E") no-repeat right 10px center;
-    border:1px solid var(--line); border-radius:999px; color:var(--muted2); font-family:inherit; font-size:13px; font-weight:700; padding:8px 26px 8px 12px; cursor:pointer}
-  .lang-select:hover, .lang-select:focus{border-color:var(--gold); color:var(--gold); outline:none}
-  .lang-select option{background:var(--surface); color:var(--txt)}
-  .video-lang{font-size:13px; color:var(--muted); margin-top:-20px; margin-bottom:24px}
-  section[id]{scroll-margin-top:72px}
-  @media (max-width:440px){ header .wrap{padding:12px 14px} .lang-select{padding:7px 22px 7px 9px; font-size:12px; background-position:right 7px center} }
 </style>
 </head>
 <body>
 
+<div id="configError">⚠ Configurazione mancante: apri index.html e sostituisci SUPABASE_ANON_KEY con la vera anon/public key del progetto Supabase (Project Settings → API). Questa pagina non funziona finché non è impostata.</div>
+
 <header>
-  <div class="wrap">
-    <a href="#top" class="logo"><span class="badge">CORE</span>54</a>
-    <div class="right">
-      <nav>
-        <a href="#come-funziona" data-i18n="nav.how">Come funziona</a>
-        <a href="#video" data-i18n="nav.video">Lezioni gratuite</a>
-        <a href="#prezzi" data-i18n="nav.prices">Prezzi</a>
-        <a href="#accesso" data-i18n="nav.access">Accesso</a>
-      </nav>
-      <select class="lang-select" id="lang-select" aria-label="Lingua / Language">
-        <option value="it">IT</option>
-        <option value="en">EN</option>
-        <option value="de">DE</option>
-        <option value="es">ES</option>
-        <option value="pl">PL</option>
-      </select>
+  <h1>CORE-54 — <b data-i18n="hdr.title">Area clienti</b></h1>
+  <nav id="tabs" role="tablist">
+    <button data-tab="corso" class="on" role="tab" data-i18n="tab.corso">🎓 Corso</button>
+    <button data-tab="strategie" role="tab" data-i18n="tab.strategie">🗺️ Strategie</button>
+    <button data-tab="calcolatore" role="tab" data-i18n="tab.calc">🧮 Calcolatore</button>
+    <button data-tab="download" role="tab" data-i18n="tab.download">⬇️ Download</button>
+  </nav>
+  <div class="hdr-right">
+    <div class="langbox" id="langBox">
+      <div class="lang-opts" id="langOpts"></div>
+      <button type="button" class="lang-cur" id="langCur" aria-expanded="false" aria-label="Lingua / Language"><span class="ch">&#8249;</span><span id="langCurTxt">IT</span></button>
+          <select id="langSelect" aria-label="Lingua / Language">
+      <option value="it">IT</option>
+      <option value="en">EN</option>
+      <option value="de">DE</option>
+      <option value="es">ES</option>
+      <option value="pl">PL</option>
+    </select>
     </div>
+    <button id="logoutBtn" data-i18n="hdr.logout">Esci</button>
   </div>
 </header>
 
-<main id="top">
+<main id="main">
+  <div id="loginCard">
+    <h2 data-i18n="login.title">Accedi</h2>
+    <label for="email" data-i18n="login.email">Email</label>
+    <input id="email" type="email" autocomplete="username">
+    <label for="password" data-i18n="login.password">Password</label>
+    <input id="password" type="password" autocomplete="current-password">
+    <button id="loginBtn" data-i18n="login.btn">Entra</button>
+    <div id="loginError"></div>
+  </div>
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="wrap">
-      <span class="eyebrow" data-i18n="hero.eyebrow">Posti limitati ogni mese</span>
-      <h1 data-i18n="hero.title">Un metodo strutturato e collaudato per costruire una seconda entrata.</h1>
-      <p class="lead" data-i18n="hero.lead">Una volta imparato, la gestione di tutti i giorni richiede solo pochi minuti — pensato per stare dentro una vita già piena di impegni, non per sostituirla.</p>
-      <div class="hero-actions">
-        <a class="btn btn-primary" href="#accesso" data-i18n="hero.cta1">Richiedi l'accesso in anteprima</a>
-        <a class="btn btn-ghost" href="#video" data-i18n="hero.cta2">Guarda le lezioni gratuite</a>
-      </div>
-      <p class="hero-note" data-i18n="hero.note">L'accesso è su invito, in piccoli gruppi ogni mese — così chi entra riceve davvero attenzione.</p>
-    </div>
+  <!-- ═══ CORSO ═══ -->
+  <section class="pane" id="pane-corso">
+    <p class="lang-note" data-i18n="note.video" hidden></p>
+    <div id="upsell" class="upsell" style="display:none" data-i18n-html="corso.upsell">Gli episodi contrassegnati <b>FREE</b> sono sempre disponibili. Il resto del corso si sblocca con Lifetime.</div>
+    <div id="lista"></div>
   </section>
 
-  <!-- COME FUNZIONA -->
-  <section id="come-funziona">
-    <div class="wrap">
-      <div class="section-head">
-        <h2 data-i18n="how.title">Come funziona, in tre passi</h2>
-        <p data-i18n="how.sub">Nessun salto nel buio: prima capisci il metodo, poi decidi con calma.</p>
-      </div>
-      <div class="steps">
-        <div class="step-card">
-          <div class="step-num">1</div>
-          <h3 data-i18n="how.s1t">Guardi le lezioni gratuite</h3>
-          <p data-i18n="how.s1p">Un assaggio per capire cosa puoi aspettarti, senza registrazione.</p>
-        </div>
-        <div class="step-card">
-          <div class="step-num">2</div>
-          <h3 data-i18n="how.s2t">Richiedi l'accesso</h3>
-          <p data-i18n="how.s2p">Scrivici: ti rispondiamo con le istruzioni per installare l'app e i passi successivi.</p>
-        </div>
-        <div class="step-card">
-          <div class="step-num">3</div>
-          <h3 data-i18n="how.s3t">Impari con calma, poi parti</h3>
-          <p data-i18n="how.s3p">Riceverai il corso completo e la possibilità di imparare in Demo + un'ora di coaching 1:1 da effettuare quando vorrai.</p>
-        </div>
-      </div>
+  <!-- ═══ STRATEGIE ═══ -->
+  <section class="pane" id="pane-strategie">
+    <div class="pane-head">
+      <h2 data-i18n="strat.title">Mappe strategiche</h2>
+      <p data-i18n="strat.sub">I percorsi della strategia, fase Sfida e fase Reale.</p>
     </div>
+    <p class="lang-note" data-i18n="note.mappe" hidden></p>
+    <div class="sub-switch" id="strat-switch">
+      <button data-file="strategiaFN50k.html" class="on" data-i18n="strat.50k">FundedNext 50K</button>
+      <button data-file="strategiaFN100k.html" data-i18n="strat.100k">FundedNext 100K</button>
+      <button data-file="strategiagoat100k.html" data-i18n="strat.goat100k">GOAT 100K</button>
+    </div>
+    <div id="strat-body"></div>
   </section>
 
-  <!-- VIDEO GRATUITI -->
-  <section id="video">
-    <div class="wrap">
-      <div class="section-head">
-        <h2 data-i18n="video.title">Le prime lezioni, gratis</h2>
-        <p data-i18n="video.sub">Guarda alcune lezioni in anteprima per capire cosa ti aspetta, gratuitamente.</p>
-      </div>
-      <p class="video-lang" id="video-lang" data-i18n="video.lang" hidden></p>
-      <div class="video-grid" id="video-grid">
-        <div class="video-card" data-video-id="b04daa4e-e815-49ac-80ae-019ce45b3b56">
-          <div class="video-frame">
-            <img loading="lazy" alt="" src="https://vz-0bb944b6-412.b-cdn.net/b04daa4e-e815-49ac-80ae-019ce45b3b56/thumbnail.jpg">
-            <button class="play-btn" aria-label="Play">
-              <span class="circle"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 3.5v13l12-6.5-12-6.5z" fill="#0A0B0E"/></svg></span>
-            </button>
-          </div>
-          <div class="video-meta">
-            <span class="tag" data-i18n="video.m1">Modulo 1</span>
-            <h3 data-i18n="video.v1">1.2 Non prevedi il mercato: sfrutti la struttura</h3>
-          </div>
-        </div>
-
-        <div class="video-card" data-video-id="5a61a040-c3cd-4ff7-8faf-3a6e3f2ac7e2">
-          <div class="video-frame">
-            <img loading="lazy" alt="" src="https://vz-0bb944b6-412.b-cdn.net/5a61a040-c3cd-4ff7-8faf-3a6e3f2ac7e2/thumbnail.jpg">
-            <button class="play-btn" aria-label="Play">
-              <span class="circle"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 3.5v13l12-6.5-12-6.5z" fill="#0A0B0E"/></svg></span>
-            </button>
-          </div>
-          <div class="video-meta">
-            <span class="tag" data-i18n="video.m1">Modulo 1</span>
-            <h3 data-i18n="video.v2">1.4 Le quattro tessere del sistema</h3>
-          </div>
-        </div>
-
-        <div class="video-card" data-video-id="fdcba486-31d9-47c6-97c4-e946ef273ac1">
-          <div class="video-frame">
-            <img loading="lazy" alt="" src="https://vz-0bb944b6-412.b-cdn.net/fdcba486-31d9-47c6-97c4-e946ef273ac1/thumbnail.jpg">
-            <button class="play-btn" aria-label="Play">
-              <span class="circle"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 3.5v13l12-6.5-12-6.5z" fill="#0A0B0E"/></svg></span>
-            </button>
-          </div>
-          <div class="video-meta">
-            <span class="tag" data-i18n="video.m2">Modulo 2</span>
-            <h3 data-i18n="video.v3">2.1 Strumenti di trading</h3>
-          </div>
-        </div>
-      </div>
+  <!-- ═══ CALCOLATORE ═══ -->
+  <section class="pane" id="pane-calcolatore">
+    <div class="pane-head">
+      <h2 data-i18n="calc.title">Calcolatore SL / TP</h2>
+      <p data-i18n="calc.sub">Inserisci i dati della prop: ottieni i valori di SL e TP da impostare su Core54 e l'effetto sul saldo del broker.</p>
     </div>
+    <div id="calc-body"></div>
   </section>
 
-  <!-- PREZZI -->
-  <section id="prezzi">
-    <div class="wrap">
-      <div class="section-head">
-        <h2 data-i18n="prices.title">Prezzi, senza sorprese</h2>
-      </div>
-      <div class="price-grid">
-        <div class="price-card featured">
-          <span class="plan-tag" data-i18n="life.tag">Lifetime</span>
-          <div class="amount">399€ <small data-i18n="life.once">una tantum</small></div>
-          <p class="sub" data-i18n="life.sub">Contiene tutto quello che serve per imparare, partire in demo e successivamente iniziare ad operare in reale.</p>
-          <ul class="price-list">
-            <li><span class="check">✓</span> <span data-i18n="life.l1">Video corso di formazione completo, senza scadenza: lo rivedi tutte le volte che vuoi</span></li>
-            <li><span class="check">✓</span> <span data-i18n="life.l2">Più strategie operative incluse nel corso, per accompagnarti passo dopo passo nell'apprendimento del metodo</span></li>
-            <li><span class="check">✓</span> <span data-i18n="life.l3">App CORE-54 (per iPhone e Android)</span></li>
-            <li><span class="check">✓</span> <span data-i18n="life.l4">Motore di esecuzione operazioni sempre attivo</span></li>
-            <li><span class="check">✓</span> <span data-i18n="life.l5">1 ora di coaching 1:1, da richiedere quando vuoi (entro i primi due mesi dall'attivazione)</span></li>
-            <li><span class="check">✓</span> <span data-i18n="life.l6">2 mesi di servizio VPS dedicata inclusi</span></li>
-            <li><span class="check">✓</span> <span data-i18n="life.l7">Accesso alla community privata su Telegram</span></li>
-          </ul>
-          <p class="price-note" data-i18n="life.note">Garanzia soddisfatti o rimborsati: 100% entro 14 giorni.</p>
-        </div>
-        <div class="price-card">
-          <span class="plan-tag" data-i18n="rec.tag">Ricorrente</span>
-          <div class="amount">219€ <small data-i18n="rec.month">/ mese</small></div>
-          <p class="sub" data-i18n="rec.sub">Attivabile dal terzo mese in avanti.</p>
-          <ul class="price-list">
-            <li><span class="check">✓</span> <span data-i18n="rec.l1">Rinnovo dell'utilizzo della VPS dedicata</span></li>
-            <li><span class="check">✓</span> <span data-i18n="rec.l2">Rinnovo del Motore di esecuzione operazioni sempre attivo</span></li>
-            <li><span class="check">✓</span> <span data-i18n="rec.l3">Permanenza all'interno della community privata</span></li>
-            <li><span class="check">✓</span> <span data-i18n="rec.l4">Aggiornamenti di app e strategie</span></li>
-          </ul>
-          <p class="price-note" data-i18n="rec.note">Per proseguire ad utilizzare il servizio anche dopo il periodo di prova incluso nel Lifetime.</p>
-        </div>
-      </div>
+  <!-- ═══ DOWNLOAD ═══ -->
+  <section class="pane" id="pane-download">
+    <div class="pane-head">
+      <h2 data-i18n="dl.title">Download</h2>
+      <p data-i18n="dl.sub">Programmi da installare sul PC per la Modalità Assistita.</p>
     </div>
+    <div id="dl-body"></div>
   </section>
-
-  <!-- TRUST -->
-  <section>
-    <div class="wrap">
-      <div class="section-head">
-        <h2 data-i18n="trust.title">Cosa aspettarti</h2>
-      </div>
-      <div class="trust-list">
-        <div class="trust-item"><span class="check">✓</span> <span data-i18n-html="trust.1"><strong>PRIVACY</strong> — le tue credenziali di trading restano solo tue: nessuno le vede, nemmeno noi.</span></div>
-        <div class="trust-item"><span class="check">✓</span> <span data-i18n-html="trust.2"><strong>PIENO CONTROLLO DEI TUOI FONDI</strong> — i fondi e i conti restano sempre tuoi, sotto il tuo controllo esclusivo.</span></div>
-        <div class="trust-item"><span class="check">✓</span> <span data-i18n-html="trust.3"><strong>GESTIONE AUTONOMA DELLE POSIZIONI A MERCATO</strong> — sei tu che decidi come e quando entrare a mercato.</span></div>
-        <div class="trust-item"><span class="check">✓</span> <span data-i18n-html="trust.4"><strong>SUPPORTO</strong> — posti aperti ad un numero limitato di persone ogni mese (max 5).</span></div>
-        <div class="trust-item"><span class="check">✓</span> <span data-i18n-html="trust.5"><strong>SEMPLICITÀ E COSTANZA</strong> — un metodo davvero semplice, ma da gestire con le attenzioni di un business vero.</span></div>
-        <div class="trust-item"><span class="check">✓</span> <span data-i18n-html="trust.6"><strong>COMMUNITY</strong> — privata e a numero chiuso, dedicata solo a chi entra, per confrontarsi e non restare da soli.</span></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ACCESSO / FORM -->
-  <section id="accesso">
-    <div class="wrap">
-      <form class="access-form" id="access-form" novalidate>
-        <div class="form-row">
-          <div class="field">
-            <label for="f-nome" data-i18n="form.nome">Nome</label>
-            <input id="f-nome" name="nome" type="text" required autocomplete="given-name">
-            <span class="field-err" id="err-nome"></span>
-          </div>
-          <div class="field">
-            <label for="f-cognome" data-i18n="form.cognome">Cognome</label>
-            <input id="f-cognome" name="cognome" type="text" required autocomplete="family-name">
-            <span class="field-err" id="err-cognome"></span>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="field">
-            <label for="f-email" data-i18n="form.email">Email</label>
-            <input id="f-email" name="email" type="email" required autocomplete="email">
-            <span class="field-err" id="err-email"></span>
-          </div>
-          <div class="field">
-            <label for="f-telefono" data-i18n="form.tel">Telefono</label>
-            <input id="f-telefono" name="telefono" type="tel" required autocomplete="tel" placeholder="+39 333 1234567">
-            <span class="field-hint" data-i18n="form.tel_hint">Con prefisso internazionale, es. +39</span>
-            <span class="field-err" id="err-telefono"></span>
-          </div>
-        </div>
-        <div class="field full">
-          <label for="f-piattaforma" data-i18n="form.platform">Piattaforma</label>
-          <select id="f-piattaforma" name="piattaforma" required>
-            <option value="ios">iOS (iPhone)</option>
-            <option value="android">Android</option>
-          </select>
-        </div>
-        <div class="field full">
-          <label for="f-messaggio" data-i18n="form.msg">Messaggio</label>
-          <textarea id="f-messaggio" name="messaggio">Ciao! Vorrei richiedere l'accesso in anteprima a CORE-54.</textarea>
-        </div>
-
-        <!-- Honeypot anti-spam: campo nascosto, un utente reale non lo vede né lo compila -->
-        <div class="honeypot" aria-hidden="true">
-          <label for="f-sito-web">Non compilare questo campo</label>
-          <input id="f-sito-web" name="sito_web" type="text" tabindex="-1" autocomplete="off">
-        </div>
-
-        <button type="submit" class="btn btn-primary btn-block" id="access-submit" data-i18n="form.submit">Invia richiesta</button>
-      </form>
-      <p class="form-msg" id="access-msg"></p>
-    </div>
-  </section>
-
 </main>
 
-
-<footer>
-  <div class="wrap">
-    <p class="disclaimer" data-i18n-html="footer.disclaimer">
-      <strong>Avvertenza.</strong> CORE-54 è uno strumento software concesso in licenza d'uso, non un intermediario finanziario, una banca, una SIM né un consulente finanziario, e non presta consulenza personalizzata né gestione di portafogli. Il trading con leva comporta un rischio elevato, compresa la possibilità di perdere il capitale investito; risultati passati o simulazioni non sono garanzia di risultati futuri. Conti e fondi restano sempre nella titolarità esclusiva dell'utente, che è l'unico responsabile delle operazioni eseguite.
-    </p>
-    <div class="bottom-row">
-      <a class="contact" href="mailto:info@core54.app">info@core54.app</a>
-      <span class="copy">© <span id="year"></span> CORE-54</span>
-    </div>
+<div id="playerOverlay">
+  <button id="playerClose">×</button>
+  <div id="playerBox" class="horiz">
+    <div id="playerLoading">…</div>
   </div>
-</footer>
+</div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
-(function(){
-  var $ = function(id){ return document.getElementById(id); };
+// ─── CONFIGURAZIONE — valori dell'app CORE-54, stessi usati dal client mobile ───
+// SUPABASE_URL è pubblico (deriva dal Project ID, già visibile in vari documenti del progetto).
+// SUPABASE_ANON_KEY è la chiave "anon/public" di Supabase (Project Settings → API) — è pensata
+// per stare in chiaro in un client (la stessa gira già nel bundle dell'app mobile).
+const SUPABASE_URL = 'https://ppyyvmyhprxahiwijyeu.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_T4WiIXTIbQjtSh7IQc0pVQ_Vgg7_gPp';
+const EDGE_FUNCTION_NAME = 'get-video-token';
 
-  // ═══ TRADUZIONI (IT di riferimento; EN/DE/ES/PL) — stessa lista lingue dell'app ═══
-  var I18N = {
-    it: {
-      'meta.title': 'CORE-54 — Accesso in anteprima',
-      'meta.desc': "CORE-54: un metodo strutturato per costruire una seconda entrata, con la serietà di un business vero. Guarda le prime lezioni gratuite e richiedi l'accesso in anteprima.",
-      'nav.how': 'Come funziona', 'nav.video': 'Lezioni gratuite', 'nav.prices': 'Prezzi', 'nav.access': 'Accesso',
-      'hero.eyebrow': 'Posti limitati ogni mese',
-      'hero.title': 'Un metodo strutturato e collaudato per costruire una seconda entrata.',
-      'hero.lead': 'Una volta imparato, la gestione di tutti i giorni richiede solo pochi minuti — pensato per stare dentro una vita già piena di impegni, non per sostituirla.',
-      'hero.cta1': "Richiedi l'accesso in anteprima", 'hero.cta2': 'Guarda le lezioni gratuite',
-      'hero.note': "L'accesso è su invito, in piccoli gruppi ogni mese — così chi entra riceve davvero attenzione.",
-      'how.title': 'Come funziona, in tre passi',
-      'how.sub': 'Nessun salto nel buio: prima capisci il metodo, poi decidi con calma.',
-      'how.s1t': 'Guardi le lezioni gratuite', 'how.s1p': 'Un assaggio per capire cosa puoi aspettarti, senza registrazione.',
-      'how.s2t': "Richiedi l'accesso", 'how.s2p': "Scrivici: ti rispondiamo con le istruzioni per installare l'app e i passi successivi.",
-      'how.s3t': 'Impari con calma, poi parti', 'how.s3p': "Riceverai il corso completo e la possibilità di imparare in Demo + un'ora di coaching 1:1 da effettuare quando vorrai.",
-      'video.title': 'Le prime lezioni, gratis',
-      'video.sub': 'Guarda alcune lezioni in anteprima per capire cosa ti aspetta, gratuitamente.',
-      'video.lang': '',
-      'video.m1': 'Modulo 1', 'video.m2': 'Modulo 2', 'video.bonus': 'Bonus',
-      'video.v1': '1.2 Non prevedi il mercato: sfrutti la struttura', 'video.v2': '1.4 Le quattro tessere del sistema', 'video.v3': '2.1 Strumenti di trading',
-      'prices.title': 'Prezzi, senza sorprese',
-      'life.tag': 'Lifetime', 'life.once': 'una tantum',
-      'life.sub': 'Contiene tutto quello che serve per imparare, partire in demo e successivamente iniziare ad operare in reale.',
-      'life.l1': 'Video corso di formazione completo, senza scadenza: lo rivedi tutte le volte che vuoi',
-      'life.l2': "Più strategie operative incluse nel corso, per accompagnarti passo dopo passo nell'apprendimento del metodo",
-      'life.l3': 'App CORE-54 (per iPhone e Android)',
-      'life.l4': 'Motore di esecuzione operazioni sempre attivo',
-      'life.l5': "1 ora di coaching 1:1, da richiedere quando vuoi (entro i primi due mesi dall'attivazione)",
-      'life.l6': '2 mesi di servizio VPS dedicata inclusi',
-      'life.l7': 'Accesso alla community privata su Telegram',
-      'life.note': 'Garanzia soddisfatti o rimborsati: 100% entro 14 giorni.',
-      'rec.tag': 'Ricorrente', 'rec.month': '/ mese', 'rec.sub': 'Attivabile dal terzo mese in avanti.',
-      'rec.l1': "Rinnovo dell'utilizzo della VPS dedicata",
-      'rec.l2': 'Rinnovo del Motore di esecuzione operazioni sempre attivo',
-      'rec.l3': "Permanenza all'interno della community privata",
-      'rec.l4': 'Aggiornamenti di app e strategie',
-      'rec.note': 'Per proseguire ad utilizzare il servizio anche dopo il periodo di prova incluso nel Lifetime.',
-      'trust.title': 'Cosa aspettarti',
-      'trust.1': '<strong>PRIVACY</strong> — le tue credenziali di trading restano solo tue: nessuno le vede, nemmeno noi.',
-      'trust.2': '<strong>PIENO CONTROLLO DEI TUOI FONDI</strong> — i fondi e i conti restano sempre tuoi, sotto il tuo controllo esclusivo.',
-      'trust.3': '<strong>GESTIONE AUTONOMA DELLE POSIZIONI A MERCATO</strong> — sei tu che decidi come e quando entrare a mercato.',
-      'trust.4': '<strong>SUPPORTO</strong> — posti aperti ad un numero limitato di persone ogni mese (max 5).',
-      'trust.5': '<strong>SEMPLICITÀ E COSTANZA</strong> — un metodo davvero semplice, ma da gestire con le attenzioni di un business vero.',
-      'trust.6': '<strong>COMMUNITY</strong> — privata e a numero chiuso, dedicata solo a chi entra, per confrontarsi e non restare da soli.',
-      'form.nome': 'Nome', 'form.cognome': 'Cognome', 'form.email': 'Email', 'form.tel': 'Telefono',
-      'form.tel_hint': 'Con prefisso internazionale, es. +39', 'form.platform': 'Piattaforma', 'form.msg': 'Messaggio',
-      'form.msg_default': "Ciao! Vorrei richiedere l'accesso in anteprima a CORE-54.",
-      'form.submit': 'Invia richiesta', 'form.sending': 'Invio in corso...',
-      'form.ok': "Richiesta inviata correttamente!<br>Ti contatteremo a breve con le istruzioni per scaricare l'App e procedere alla registrazione.",
-      'form.err_send': 'Qualcosa non ha funzionato. Scrivici direttamente a <a href="mailto:info@core54.app">info@core54.app</a>.',
-      'form.err_conn': 'Modulo non ancora collegato. Scrivici direttamente a <a href="mailto:info@core54.app">info@core54.app</a>.',
-      'form.err_fields': 'Controlla i campi evidenziati in rosso.',
-      'form.err_nome': 'Inserisci il tuo nome.', 'form.err_cognome': 'Inserisci il tuo cognome.',
-      'form.err_email_req': 'Inserisci la tua email.', 'form.err_email_bad': 'Email non valida (es. nome@dominio.it).',
-      'form.err_tel_req': 'Inserisci il tuo numero.', 'form.err_tel_bad': 'Numero non valido: usa il prefisso internazionale, es. +39 333 1234567.',
-      'footer.disclaimer': "<strong>Avvertenza.</strong> CORE-54 è uno strumento software concesso in licenza d'uso, non un intermediario finanziario, una banca, una SIM né un consulente finanziario, e non presta consulenza personalizzata né gestione di portafogli. Il trading con leva comporta un rischio elevato, compresa la possibilità di perdere il capitale investito; risultati passati o simulazioni non sono garanzia di risultati futuri. Conti e fondi restano sempre nella titolarità esclusiva dell'utente, che è l'unico responsabile delle operazioni eseguite."
-    },
-    en: {
-      'meta.title': 'CORE-54 — Early access',
-      'meta.desc': 'CORE-54: a structured method to build a second income, with the seriousness of a real business. Watch the first free lessons and request early access.',
-      'nav.how': 'How it works', 'nav.video': 'Free lessons', 'nav.prices': 'Pricing', 'nav.access': 'Access',
-      'hero.eyebrow': 'Limited spots every month',
-      'hero.title': 'A structured, proven method to build a second income.',
-      'hero.lead': 'Once learned, day-to-day management takes just a few minutes — designed to fit into an already busy life, not to replace it.',
-      'hero.cta1': 'Request early access', 'hero.cta2': 'Watch the free lessons',
-      'hero.note': 'Access is by invitation, in small groups every month — so everyone who joins gets real attention.',
-      'how.title': 'How it works, in three steps',
-      'how.sub': 'No leap in the dark: first you understand the method, then you decide calmly.',
-      'how.s1t': 'Watch the free lessons', 'how.s1p': 'A taste of what to expect, no sign-up required.',
-      'how.s2t': 'Request access', 'how.s2p': "Write to us: we'll reply with instructions to install the app and the next steps.",
-      'how.s3t': 'Learn at your pace, then start', 'how.s3p': "You'll get the full course and the chance to learn in Demo + one hour of 1:1 coaching whenever you like.",
-      'video.title': 'The first lessons, free',
-      'video.sub': 'Watch a few preview lessons to see what awaits you, free of charge.',
-      'video.lang': 'Lessons are in Italian.',
-      'video.m1': 'Module 1', 'video.m2': 'Module 2', 'video.bonus': 'Bonus',
-      'video.v1': "1.2 You don't predict the market: you use the structure", 'video.v2': '1.4 The four pieces of the system', 'video.v3': '2.1 Trading tools',
-      'prices.title': 'Pricing, no surprises',
-      'life.tag': 'Lifetime', 'life.once': 'one-off',
-      'life.sub': 'Everything you need to learn, start in demo and then move on to live trading.',
-      'life.l1': 'Complete video training course, no expiry: rewatch it as often as you like',
-      'life.l2': 'Several operating strategies included in the course, guiding you step by step as you learn the method',
-      'life.l3': 'CORE-54 app (iPhone and Android)',
-      'life.l4': 'Always-on trade execution engine',
-      'life.l5': '1 hour of 1:1 coaching, to book whenever you want (within the first two months after activation)',
-      'life.l6': '2 months of dedicated VPS service included',
-      'life.l7': 'Access to the private Telegram community',
-      'life.note': 'Money-back guarantee: 100% within 14 days.',
-      'rec.tag': 'Recurring', 'rec.month': '/ month', 'rec.sub': 'Available from the third month onwards.',
-      'rec.l1': 'Renewal of the dedicated VPS',
-      'rec.l2': 'Renewal of the always-on trade execution engine',
-      'rec.l3': 'Continued membership of the private community',
-      'rec.l4': 'App and strategy updates',
-      'rec.note': 'To keep using the service after the trial period included in Lifetime.',
-      'trust.title': 'What to expect',
-      'trust.1': '<strong>PRIVACY</strong> — your trading credentials stay yours alone: nobody sees them, not even us.',
-      'trust.2': '<strong>FULL CONTROL OF YOUR FUNDS</strong> — funds and accounts always remain yours, under your exclusive control.',
-      'trust.3': '<strong>YOU MANAGE YOUR MARKET POSITIONS</strong> — you decide how and when to enter the market.',
-      'trust.4': '<strong>SUPPORT</strong> — spots open to a limited number of people each month (max 5).',
-      'trust.5': '<strong>SIMPLICITY AND CONSISTENCY</strong> — a truly simple method, but one to run with the care of a real business.',
-      'trust.6': "<strong>COMMUNITY</strong> — private and invitation-only, just for members, to share ideas and never feel alone.",
-      'form.nome': 'First name', 'form.cognome': 'Last name', 'form.email': 'Email', 'form.tel': 'Phone',
-      'form.tel_hint': 'With international prefix, e.g. +44', 'form.platform': 'Platform', 'form.msg': 'Message',
-      'form.msg_default': "Hi! I'd like to request early access to CORE-54.",
-      'form.submit': 'Send request', 'form.sending': 'Sending...',
-      'form.ok': "Request sent successfully!<br>We'll be in touch shortly with instructions to download the App and register.",
-      'form.err_send': 'Something went wrong. Write to us directly at <a href="mailto:info@core54.app">info@core54.app</a>.',
-      'form.err_conn': 'Form not connected yet. Write to us directly at <a href="mailto:info@core54.app">info@core54.app</a>.',
-      'form.err_fields': 'Please check the fields highlighted in red.',
-      'form.err_nome': 'Enter your first name.', 'form.err_cognome': 'Enter your last name.',
-      'form.err_email_req': 'Enter your email.', 'form.err_email_bad': 'Invalid email (e.g. name@domain.com).',
-      'form.err_tel_req': 'Enter your number.', 'form.err_tel_bad': 'Invalid number: use the international prefix, e.g. +44 7700 900123.',
-      'footer.disclaimer': '<strong>Disclaimer.</strong> CORE-54 is a software tool provided under a licence of use; it is not a financial intermediary, a bank, an investment firm or a financial adviser, and it provides neither personalised advice nor portfolio management. Leveraged trading involves a high level of risk, including the possibility of losing the invested capital; past results or simulations are no guarantee of future results. Accounts and funds always remain the exclusive property of the user, who is solely responsible for the trades executed.'
-    },
-    de: {
-      'meta.title': 'CORE-54 — Früher Zugang',
-      'meta.desc': 'CORE-54: eine strukturierte Methode für ein zweites Einkommen, mit der Ernsthaftigkeit eines echten Unternehmens. Sieh dir die ersten kostenlosen Lektionen an und beantrage frühen Zugang.',
-      'nav.how': "So funktioniert's", 'nav.video': 'Gratis-Lektionen', 'nav.prices': 'Preise', 'nav.access': 'Zugang',
-      'hero.eyebrow': 'Begrenzte Plätze pro Monat',
-      'hero.title': 'Eine strukturierte, bewährte Methode für ein zweites Einkommen.',
-      'hero.lead': 'Einmal gelernt, braucht die tägliche Verwaltung nur wenige Minuten — gemacht für ein ohnehin volles Leben, nicht um es zu ersetzen.',
-      'hero.cta1': 'Frühen Zugang beantragen', 'hero.cta2': 'Gratis-Lektionen ansehen',
-      'hero.note': 'Zugang nur auf Einladung, jeden Monat in kleinen Gruppen — damit jeder, der dabei ist, echte Aufmerksamkeit bekommt.',
-      'how.title': "So funktioniert's, in drei Schritten",
-      'how.sub': 'Kein Sprung ins Ungewisse: Erst verstehst du die Methode, dann entscheidest du in Ruhe.',
-      'how.s1t': 'Gratis-Lektionen ansehen', 'how.s1p': 'Ein Vorgeschmack auf das, was dich erwartet — ohne Registrierung.',
-      'how.s2t': 'Zugang beantragen', 'how.s2p': 'Schreib uns: Wir antworten mit der Anleitung zur Installation der App und den nächsten Schritten.',
-      'how.s3t': 'In Ruhe lernen, dann starten', 'how.s3p': 'Du erhältst den kompletten Kurs, die Möglichkeit im Demo-Modus zu lernen + eine Stunde 1:1-Coaching, wann immer du willst.',
-      'video.title': 'Die ersten Lektionen, gratis',
-      'video.sub': 'Sieh dir einige Lektionen vorab an und erfahre kostenlos, was dich erwartet.',
-      'video.lang': 'Die Lektionen sind auf Italienisch.',
-      'video.m1': 'Modul 1', 'video.m2': 'Modul 2', 'video.bonus': 'Bonus',
-      'video.v1': '1.2 Du sagst den Markt nicht voraus: du nutzt die Struktur', 'video.v2': '1.4 Die vier Bausteine des Systems', 'video.v3': '2.1 Trading-Tools',
-      'prices.title': 'Preise, ohne Überraschungen',
-      'life.tag': 'Lifetime', 'life.once': 'einmalig',
-      'life.sub': 'Alles, was du brauchst, um zu lernen, im Demo-Modus zu starten und anschließend real zu handeln.',
-      'life.l1': 'Kompletter Video-Schulungskurs ohne Ablaufdatum: so oft ansehen, wie du willst',
-      'life.l2': 'Mehrere operative Strategien im Kurs enthalten, die dich Schritt für Schritt beim Erlernen der Methode begleiten',
-      'life.l3': 'CORE-54 App (für iPhone und Android)',
-      'life.l4': 'Stets aktive Engine zur Orderausführung',
-      'life.l5': '1 Stunde 1:1-Coaching, abrufbar wann du willst (innerhalb der ersten zwei Monate nach Aktivierung)',
-      'life.l6': '2 Monate dedizierter VPS-Service inklusive',
-      'life.l7': 'Zugang zur privaten Telegram-Community',
-      'life.note': 'Geld-zurück-Garantie: 100 % innerhalb von 14 Tagen.',
-      'rec.tag': 'Abo', 'rec.month': '/ Monat', 'rec.sub': 'Ab dem dritten Monat aktivierbar.',
-      'rec.l1': 'Verlängerung des dedizierten VPS',
-      'rec.l2': 'Verlängerung der stets aktiven Engine zur Orderausführung',
-      'rec.l3': 'Weitere Mitgliedschaft in der privaten Community',
-      'rec.l4': 'Updates für App und Strategien',
-      'rec.note': 'Um den Service auch nach der im Lifetime enthaltenen Testphase weiter zu nutzen.',
-      'trust.title': 'Was dich erwartet',
-      'trust.1': '<strong>PRIVATSPHÄRE</strong> — deine Trading-Zugangsdaten gehören nur dir: niemand sieht sie, nicht einmal wir.',
-      'trust.2': '<strong>VOLLE KONTROLLE ÜBER DEINE GELDER</strong> — Gelder und Konten bleiben immer deine, unter deiner alleinigen Kontrolle.',
-      'trust.3': '<strong>EIGENSTÄNDIGE STEUERUNG DEINER POSITIONEN</strong> — du entscheidest, wie und wann du in den Markt gehst.',
-      'trust.4': '<strong>SUPPORT</strong> — jeden Monat nur für eine begrenzte Anzahl von Personen offen (max. 5).',
-      'trust.5': '<strong>EINFACHHEIT UND BESTÄNDIGKEIT</strong> — eine wirklich einfache Methode, die aber mit der Sorgfalt eines echten Unternehmens geführt werden will.',
-      'trust.6': '<strong>COMMUNITY</strong> — privat und geschlossen, nur für Mitglieder, zum Austausch und damit du nicht allein bist.',
-      'form.nome': 'Vorname', 'form.cognome': 'Nachname', 'form.email': 'E-Mail', 'form.tel': 'Telefon',
-      'form.tel_hint': 'Mit internationaler Vorwahl, z. B. +49', 'form.platform': 'Plattform', 'form.msg': 'Nachricht',
-      'form.msg_default': 'Hallo! Ich möchte frühen Zugang zu CORE-54 beantragen.',
-      'form.submit': 'Anfrage senden', 'form.sending': 'Wird gesendet...',
-      'form.ok': 'Anfrage erfolgreich gesendet!<br>Wir melden uns in Kürze mit der Anleitung zum Herunterladen der App und zur Registrierung.',
-      'form.err_send': 'Etwas hat nicht funktioniert. Schreib uns direkt an <a href="mailto:info@core54.app">info@core54.app</a>.',
-      'form.err_conn': 'Formular noch nicht verbunden. Schreib uns direkt an <a href="mailto:info@core54.app">info@core54.app</a>.',
-      'form.err_fields': 'Bitte prüfe die rot markierten Felder.',
-      'form.err_nome': 'Gib deinen Vornamen ein.', 'form.err_cognome': 'Gib deinen Nachnamen ein.',
-      'form.err_email_req': 'Gib deine E-Mail ein.', 'form.err_email_bad': 'Ungültige E-Mail (z. B. name@domain.de).',
-      'form.err_tel_req': 'Gib deine Nummer ein.', 'form.err_tel_bad': 'Ungültige Nummer: Verwende die internationale Vorwahl, z. B. +49 151 23456789.',
-      'footer.disclaimer': '<strong>Hinweis.</strong> CORE-54 ist ein Software-Tool, das unter einer Nutzungslizenz bereitgestellt wird; es ist weder ein Finanzintermediär noch eine Bank, eine Wertpapierfirma oder ein Finanzberater und erbringt weder persönliche Anlageberatung noch Vermögensverwaltung. Der Handel mit Hebel ist mit einem hohen Risiko verbunden, einschließlich der Möglichkeit, das eingesetzte Kapital zu verlieren; vergangene Ergebnisse oder Simulationen sind keine Garantie für zukünftige Ergebnisse. Konten und Gelder bleiben stets im ausschließlichen Eigentum des Nutzers, der allein für die ausgeführten Geschäfte verantwortlich ist.'
-    },
-    es: {
-      'meta.title': 'CORE-54 — Acceso anticipado',
-      'meta.desc': 'CORE-54: un método estructurado para construir un segundo ingreso, con la seriedad de un negocio real. Mira las primeras lecciones gratuitas y solicita el acceso anticipado.',
-      'nav.how': 'Cómo funciona', 'nav.video': 'Lecciones gratis', 'nav.prices': 'Precios', 'nav.access': 'Acceso',
-      'hero.eyebrow': 'Plazas limitadas cada mes',
-      'hero.title': 'Un método estructurado y probado para construir un segundo ingreso.',
-      'hero.lead': 'Una vez aprendido, la gestión diaria solo requiere unos minutos — pensado para encajar en una vida ya llena de compromisos, no para sustituirla.',
-      'hero.cta1': 'Solicita el acceso anticipado', 'hero.cta2': 'Mira las lecciones gratuitas',
-      'hero.note': 'El acceso es por invitación, en grupos pequeños cada mes — así quien entra recibe atención de verdad.',
-      'how.title': 'Cómo funciona, en tres pasos',
-      'how.sub': 'Sin saltos al vacío: primero entiendes el método, luego decides con calma.',
-      'how.s1t': 'Ves las lecciones gratuitas', 'how.s1p': 'Una muestra para entender qué puedes esperar, sin registro.',
-      'how.s2t': 'Solicitas el acceso', 'how.s2p': 'Escríbenos: te respondemos con las instrucciones para instalar la app y los pasos siguientes.',
-      'how.s3t': 'Aprendes con calma y luego empiezas', 'how.s3p': 'Recibirás el curso completo y la posibilidad de aprender en Demo + una hora de coaching 1:1 cuando quieras.',
-      'video.title': 'Las primeras lecciones, gratis',
-      'video.sub': 'Mira algunas lecciones de muestra para ver lo que te espera, gratis.',
-      'video.lang': 'Las lecciones están en italiano.',
-      'video.m1': 'Módulo 1', 'video.m2': 'Módulo 2', 'video.bonus': 'Bonus',
-      'video.v1': '1.2 No predices el mercado: aprovechas la estructura', 'video.v2': '1.4 Las cuatro piezas del sistema', 'video.v3': '2.1 Herramientas de trading',
-      'prices.title': 'Precios, sin sorpresas',
-      'life.tag': 'Lifetime', 'life.once': 'pago único',
-      'life.sub': 'Incluye todo lo necesario para aprender, empezar en demo y después operar en real.',
-      'life.l1': 'Videocurso de formación completo, sin caducidad: lo vuelves a ver todas las veces que quieras',
-      'life.l2': 'Varias estrategias operativas incluidas en el curso, para acompañarte paso a paso en el aprendizaje del método',
-      'life.l3': 'App CORE-54 (para iPhone y Android)',
-      'life.l4': 'Motor de ejecución de operaciones siempre activo',
-      'life.l5': '1 hora de coaching 1:1, para solicitar cuando quieras (dentro de los dos primeros meses desde la activación)',
-      'life.l6': '2 meses de servicio VPS dedicado incluidos',
-      'life.l7': 'Acceso a la comunidad privada en Telegram',
-      'life.note': 'Garantía de devolución: 100% en 14 días.',
-      'rec.tag': 'Recurrente', 'rec.month': '/ mes', 'rec.sub': 'Activable a partir del tercer mes.',
-      'rec.l1': 'Renovación del uso del VPS dedicado',
-      'rec.l2': 'Renovación del motor de ejecución de operaciones siempre activo',
-      'rec.l3': 'Permanencia en la comunidad privada',
-      'rec.l4': 'Actualizaciones de la app y de las estrategias',
-      'rec.note': 'Para seguir usando el servicio después del periodo de prueba incluido en Lifetime.',
-      'trust.title': 'Qué puedes esperar',
-      'trust.1': '<strong>PRIVACIDAD</strong> — tus credenciales de trading son solo tuyas: nadie las ve, ni siquiera nosotros.',
-      'trust.2': '<strong>CONTROL TOTAL DE TUS FONDOS</strong> — los fondos y las cuentas siguen siendo siempre tuyos, bajo tu control exclusivo.',
-      'trust.3': '<strong>GESTIÓN AUTÓNOMA DE TUS POSICIONES</strong> — tú decides cómo y cuándo entrar al mercado.',
-      'trust.4': '<strong>SOPORTE</strong> — plazas abiertas a un número limitado de personas cada mes (máx. 5).',
-      'trust.5': '<strong>SENCILLEZ Y CONSTANCIA</strong> — un método realmente sencillo, pero que se gestiona con la atención de un negocio real.',
-      'trust.6': '<strong>COMUNIDAD</strong> — privada y cerrada, solo para quien entra, para compartir y no estar solo.',
-      'form.nome': 'Nombre', 'form.cognome': 'Apellido', 'form.email': 'Email', 'form.tel': 'Teléfono',
-      'form.tel_hint': 'Con prefijo internacional, p. ej. +34', 'form.platform': 'Plataforma', 'form.msg': 'Mensaje',
-      'form.msg_default': '¡Hola! Me gustaría solicitar el acceso anticipado a CORE-54.',
-      'form.submit': 'Enviar solicitud', 'form.sending': 'Enviando...',
-      'form.ok': '¡Solicitud enviada correctamente!<br>Te contactaremos en breve con las instrucciones para descargar la App y registrarte.',
-      'form.err_send': 'Algo no ha funcionado. Escríbenos directamente a <a href="mailto:info@core54.app">info@core54.app</a>.',
-      'form.err_conn': 'Formulario aún no conectado. Escríbenos directamente a <a href="mailto:info@core54.app">info@core54.app</a>.',
-      'form.err_fields': 'Revisa los campos marcados en rojo.',
-      'form.err_nome': 'Introduce tu nombre.', 'form.err_cognome': 'Introduce tu apellido.',
-      'form.err_email_req': 'Introduce tu email.', 'form.err_email_bad': 'Email no válido (p. ej. nombre@dominio.es).',
-      'form.err_tel_req': 'Introduce tu número.', 'form.err_tel_bad': 'Número no válido: usa el prefijo internacional, p. ej. +34 612 345 678.',
-      'footer.disclaimer': '<strong>Advertencia.</strong> CORE-54 es una herramienta de software cedida bajo licencia de uso; no es un intermediario financiero, un banco, una empresa de servicios de inversión ni un asesor financiero, y no presta asesoramiento personalizado ni gestión de carteras. El trading con apalancamiento conlleva un riesgo elevado, incluida la posibilidad de perder el capital invertido; los resultados pasados o las simulaciones no garantizan resultados futuros. Las cuentas y los fondos siguen siendo siempre de titularidad exclusiva del usuario, que es el único responsable de las operaciones ejecutadas.'
-    },
-    pl: {
-      'meta.title': 'CORE-54 — Wczesny dostęp',
-      'meta.desc': 'CORE-54: uporządkowana metoda budowania drugiego źródła dochodu, z powagą prawdziwego biznesu. Obejrzyj pierwsze darmowe lekcje i poproś o wczesny dostęp.',
-      'nav.how': 'Jak to działa', 'nav.video': 'Darmowe lekcje', 'nav.prices': 'Cennik', 'nav.access': 'Dostęp',
-      'hero.eyebrow': 'Ograniczona liczba miejsc co miesiąc',
-      'hero.title': 'Uporządkowana, sprawdzona metoda budowania drugiego źródła dochodu.',
-      'hero.lead': 'Gdy ją opanujesz, codzienna obsługa zajmuje tylko kilka minut — stworzona, by zmieścić się w już pełnym obowiązków życiu, a nie je zastąpić.',
-      'hero.cta1': 'Poproś o wczesny dostęp', 'hero.cta2': 'Obejrzyj darmowe lekcje',
-      'hero.note': 'Dostęp tylko na zaproszenie, w małych grupach co miesiąc — dzięki temu każdy, kto dołącza, dostaje prawdziwą uwagę.',
-      'how.title': 'Jak to działa, w trzech krokach',
-      'how.sub': 'Bez skoku w nieznane: najpierw rozumiesz metodę, potem spokojnie decydujesz.',
-      'how.s1t': 'Oglądasz darmowe lekcje', 'how.s1p': 'Przedsmak tego, czego możesz się spodziewać, bez rejestracji.',
-      'how.s2t': 'Prosisz o dostęp', 'how.s2p': 'Napisz do nas: odpowiemy z instrukcją instalacji aplikacji i kolejnymi krokami.',
-      'how.s3t': 'Uczysz się spokojnie, potem startujesz', 'how.s3p': 'Otrzymasz pełny kurs i możliwość nauki w trybie Demo + godzinę coachingu 1:1, kiedy zechcesz.',
-      'video.title': 'Pierwsze lekcje za darmo',
-      'video.sub': 'Obejrzyj kilka lekcji próbnych i zobacz za darmo, co na ciebie czeka.',
-      'video.lang': 'Lekcje są w języku włoskim.',
-      'video.m1': 'Moduł 1', 'video.m2': 'Moduł 2', 'video.bonus': 'Bonus',
-      'video.v1': '1.2 Nie przewidujesz rynku: wykorzystujesz strukturę', 'video.v2': '1.4 Cztery elementy systemu', 'video.v3': '2.1 Narzędzia tradingowe',
-      'prices.title': 'Cennik bez niespodzianek',
-      'life.tag': 'Lifetime', 'life.once': 'jednorazowo',
-      'life.sub': 'Wszystko, czego potrzebujesz, by się nauczyć, zacząć na demo, a następnie handlować na realnym koncie.',
-      'life.l1': 'Pełny kurs wideo bez daty ważności: oglądasz go tyle razy, ile chcesz',
-      'life.l2': 'Kilka strategii operacyjnych w kursie, które krok po kroku prowadzą cię przez naukę metody',
-      'life.l3': 'Aplikacja CORE-54 (na iPhone i Androida)',
-      'life.l4': 'Stale aktywny silnik realizacji zleceń',
-      'life.l5': '1 godzina coachingu 1:1, do wykorzystania kiedy chcesz (w ciągu pierwszych dwóch miesięcy od aktywacji)',
-      'life.l6': '2 miesiące dedykowanego serwera VPS w cenie',
-      'life.l7': 'Dostęp do prywatnej społeczności na Telegramie',
-      'life.note': 'Gwarancja zwrotu pieniędzy: 100% w ciągu 14 dni.',
-      'rec.tag': 'Abonament', 'rec.month': '/ mies.', 'rec.sub': 'Do aktywowania od trzeciego miesiąca.',
-      'rec.l1': 'Odnowienie dedykowanego serwera VPS',
-      'rec.l2': 'Odnowienie stale aktywnego silnika realizacji zleceń',
-      'rec.l3': 'Dalsze członkostwo w prywatnej społeczności',
-      'rec.l4': 'Aktualizacje aplikacji i strategii',
-      'rec.note': 'Aby dalej korzystać z usługi po okresie próbnym zawartym w Lifetime.',
-      'trust.title': 'Czego możesz się spodziewać',
-      'trust.1': '<strong>PRYWATNOŚĆ</strong> — twoje dane logowania do tradingu należą tylko do ciebie: nikt ich nie widzi, nawet my.',
-      'trust.2': '<strong>PEŁNA KONTROLA NAD ŚRODKAMI</strong> — środki i konta zawsze pozostają twoje, pod twoją wyłączną kontrolą.',
-      'trust.3': '<strong>SAMODZIELNE ZARZĄDZANIE POZYCJAMI</strong> — to ty decydujesz, jak i kiedy wejść na rynek.',
-      'trust.4': '<strong>WSPARCIE</strong> — miejsca dla ograniczonej liczby osób każdego miesiąca (maks. 5).',
-      'trust.5': '<strong>PROSTOTA I SYSTEMATYCZNOŚĆ</strong> — naprawdę prosta metoda, ale prowadzona z dbałością prawdziwego biznesu.',
-      'trust.6': '<strong>SPOŁECZNOŚĆ</strong> — prywatna i zamknięta, tylko dla uczestników, by wymieniać się doświadczeniami i nie być samemu.',
-      'form.nome': 'Imię', 'form.cognome': 'Nazwisko', 'form.email': 'E-mail', 'form.tel': 'Telefon',
-      'form.tel_hint': 'Z numerem kierunkowym kraju, np. +48', 'form.platform': 'Platforma', 'form.msg': 'Wiadomość',
-      'form.msg_default': 'Cześć! Chciałbym poprosić o wczesny dostęp do CORE-54.',
-      'form.submit': 'Wyślij prośbę', 'form.sending': 'Wysyłanie...',
-      'form.ok': 'Prośba wysłana pomyślnie!<br>Wkrótce skontaktujemy się z instrukcją pobrania aplikacji i rejestracji.',
-      'form.err_send': 'Coś poszło nie tak. Napisz do nas bezpośrednio na <a href="mailto:info@core54.app">info@core54.app</a>.',
-      'form.err_conn': 'Formularz nie jest jeszcze podłączony. Napisz do nas bezpośrednio na <a href="mailto:info@core54.app">info@core54.app</a>.',
-      'form.err_fields': 'Sprawdź pola zaznaczone na czerwono.',
-      'form.err_nome': 'Podaj swoje imię.', 'form.err_cognome': 'Podaj swoje nazwisko.',
-      'form.err_email_req': 'Podaj swój e-mail.', 'form.err_email_bad': 'Nieprawidłowy e-mail (np. imie@domena.pl).',
-      'form.err_tel_req': 'Podaj swój numer.', 'form.err_tel_bad': 'Nieprawidłowy numer: użyj numeru kierunkowego kraju, np. +48 512 345 678.',
-      'footer.disclaimer': '<strong>Zastrzeżenie.</strong> CORE-54 to narzędzie programowe udostępniane na podstawie licencji; nie jest pośrednikiem finansowym, bankiem, firmą inwestycyjną ani doradcą finansowym i nie świadczy doradztwa indywidualnego ani zarządzania portfelem. Handel z dźwignią wiąże się z wysokim ryzykiem, w tym możliwością utraty zainwestowanego kapitału; wyniki historyczne lub symulacje nie gwarantują przyszłych wyników. Konta i środki zawsze pozostają wyłączną własnością użytkownika, który ponosi wyłączną odpowiedzialność za wykonane transakcje.'
-    }
-  };
+// Contenuti riservati Lifetime (Strategie + Calcolatore) — 10/10/2026.
+// NON stanno in questo repo (pubblico): vivono nel bucket PRIVATO di Supabase Storage "riservato".
+// Il vero controllo di accesso è la policy di Storage "riservato_select_lifetime" (admin o Lifetime
+// attivo, stessa condizione di get-video-token): a chi non ha diritto il download fallisce lato
+// server, qualunque cosa faccia il browser. Per aggiornare una mappa o il calcolatore basta
+// ricaricare il file con lo STESSO nome nel bucket (Dashboard → Storage → riservato), senza
+// toccare questa pagina.
+const BUCKET_RISERVATO = 'riservato';
 
+// Download del Bridge — 30/10/2026. Il setup sta nel bucket PRIVATO "bridge"; la riga unica di
+// public.bridge_rilascio dice versione e nome del file (vedi sql/bridge_download_migration.sql).
+// Chi può scaricare lo decide la policy di Storage "bridge_select_clienti" (admin oppure Lifetime o
+// Ricorrente attivo non scaduto, sql/bridge_download_lifetime_migration.sql): qui un link firmato
+// che fallisce = scheda bloccata.
+// Per pubblicare una nuova versione: carica il file nel bucket e aggiorna la riga, senza toccare
+// questa pagina. L'app apre https://corso.core54.app/#download per arrivare dritto a questa scheda.
+const BUCKET_BRIDGE = 'bridge';
+const DURATA_LINK_SEC = 120;
 
-  // ═══ LINGUA ═══
-  var LANGS = ['it','en','de','es','pl'];
-  var lang = 'it';
-  function t(k){ var d = I18N[lang] || I18N.it; return (d[k] !== undefined) ? d[k] : I18N.it[k]; }
-  function isDefaultMsg(v){ return LANGS.some(function(l){ return I18N[l]['form.msg_default'] === v; }); }
-
-  function applyLang(l){
-    lang = LANGS.indexOf(l) >= 0 ? l : 'it';
-    document.documentElement.lang = lang;
-    document.title = t('meta.title');
-    var md = document.querySelector('meta[name="description"]'); if (md) md.setAttribute('content', t('meta.desc'));
-    document.querySelectorAll('[data-i18n]').forEach(function(el){ el.textContent = t(el.getAttribute('data-i18n')); });
-    document.querySelectorAll('[data-i18n-html]').forEach(function(el){ el.innerHTML = t(el.getAttribute('data-i18n-html')); });
-    document.querySelectorAll('[data-i18n-title]').forEach(function(el){ el.title = t(el.getAttribute('data-i18n-title')); });
-    var vl = $('video-lang'); vl.hidden = !t('video.lang');
-    var msg = $('f-messaggio'); if (!msg.value || isDefaultMsg(msg.value)) msg.value = t('form.msg_default');
-    $('lang-select').value = lang;
-    try { localStorage.setItem('core54_lang', lang); } catch(e) {}
-    // rinfresca errori/valori già mostrati nella nuova lingua
-    if (accessMsg.className === 'form-msg ok') accessMsg.innerHTML = t('form.ok');
-    if (accessMsg.className === 'form-msg err' && LANGS.some(function(l){ return I18N[l]['form.err_fields'] === accessMsg.textContent; })) accessMsg.textContent = t('form.err_fields');
-    ['nome','cognome','email','telefono'].forEach(function(id){ if ($('err-' + id).classList.contains('show')) validaCampi(leggiPayload()); });
+// ─── LINGUE (stesse dell'app: IT, EN, DE, ES, PL) — 10/10/2026 ───
+// Testi dell'interfaccia tradotti qui. Titoli episodi: per ora arrivano dal DB in italiano; se in
+// futuro si aggiungono colonne corso_episodi.titolo_en / titolo_de / ... la pagina le usa da sola.
+// Audio dei video: la lingua scelta viene già inviata a get-video-token (campo "lang"), che oggi la
+// ignora e restituisce sempre il video italiano — quando ci saranno i video tradotti basterà
+// aggiornare la Edge Function, non questa pagina.
+const LANGS = ['it', 'en', 'de', 'es', 'pl'];
+const I18N = {
+  it: {
+    'meta.title': 'CORE-54 — Area clienti', 'hdr.title': 'Area clienti', 'hdr.logout': 'Esci',
+    'login.title': 'Accedi', 'login.email': 'Email', 'login.password': 'Password', 'login.btn': 'Entra',
+    'tab.corso': '🎓 Corso', 'tab.strategie': '🗺️ Strategie', 'tab.calc': '🧮 Calcolatore',
+    'corso.upsell': 'Gli episodi contrassegnati <b>FREE</b> sono sempre disponibili. Il resto del corso si sblocca con Lifetime.',
+    'corso.modulo': 'Modulo', 'corso.empty': 'Nessun episodio disponibile al momento.',
+    'corso.locked_alert': 'Questo episodio si sblocca con Lifetime. Gli episodi FREE restano sempre disponibili.',
+    'mod.1': 'Strategia in sintesi', 'mod.2': 'Fondamenti', 'mod.3': 'Strategia in dettaglio', 'mod.4': 'Aprire i conti', 'mod.5': "L'app pagina per pagina", 'mod.6': 'Modalità Assistita',
+    'note.video': '', 'note.mappe': '',
+    'strat.title': 'Mappe strategiche', 'strat.sub': 'I percorsi della strategia, fase Sfida e fase Reale.',
+    'strat.50k': 'FundedNext 50K', 'strat.100k': 'FundedNext 100K', 'strat.goat100k': 'GOAT 100K',
+    'calc.title': 'Calcolatore SL / TP', 'calc.sub': "Inserisci i dati della prop: ottieni i valori di SL e TP da impostare su Core54 e l'effetto sul saldo del broker.",
+    'ris.locked_t': 'Contenuto riservato ai clienti Lifetime', 'ris.locked_p': 'Strategie e calcolatore si sbloccano con il piano Lifetime.',
+    'ris.loading': 'Caricamento…', 'ris.error': 'Impossibile caricare il contenuto. Riprova tra poco; se il problema continua scrivi a info@core54.app.',
+    'player.loading': 'Caricamento…', 'player.error': 'Impossibile riprodurre il video:',
+    'tab.download': '⬇️ Download', 'dl.title': 'Download', 'dl.sub': 'Bridge, istruzioni per il PC e PDF delle strategie.',
+    'dl.sec_bridge': 'Programma', 'dl.sec_pc': 'Guide', 'dl.sec_strat': 'PDF Strategie', 'dl.btn_row': 'Scarica', 'dl.det': 'Novità e istruzioni di installazione',
+    'dl.locked_pc': 'Le istruzioni per il PC si scaricano con un abbonamento attivo.', 'dl.locked_strat': 'I PDF delle strategie si sbloccano con il piano Lifetime.',
+    'dl.versione': 'Versione', 'dl.btn': 'Scarica il Bridge', 'dl.novita': 'Novità',
+    'dl.nota': "Se Windows mostra <b>«PC protetto da Windows»</b>: premiamo <b>Ulteriori informazioni</b> e poi <b>Esegui comunque</b>. Per aggiornare basta premere <b>Aggiorna ora il Bridge sul PC</b> nell'app, oppure installare sopra la versione vecchia: il collegamento con l'app resta.",
+    'dl.locked_t': 'Riservato ai clienti CORE-54', 'dl.locked_p': 'Il Bridge si scarica con un abbonamento attivo. Se ti sei appena abbonato e lo vedi ancora bloccato, scrivi a info@core54.app.',
+    'dl.err_link': 'Download non riuscito. Riprova; se il problema continua scrivi a info@core54.app.',
+    'req.title': 'Requisiti del PC dedicato', 'req.intro': 'Per un PC che fa girare il Bridge, 2–3 MetaTrader 5 e Chrome Remote Desktop, acceso 24 ore su 24.',
+    'req.voce': 'Voce', 'req.min': 'Minimo', 'req.cons': 'Consigliato',
+    'req.cpu': 'Processore', 'req.cpu_min': '4 core, turbo da 3,4 GHz in su, PassMark sopra 3500 (es. Intel N95, Core i3 dall’8ª generazione, Ryzen 3000)', 'req.cpu_cons': 'PassMark sopra 5000 (es. Intel N100/N150, Ryzen 5 5000)',
+    'req.ram': 'RAM', 'req.ram_min': '8 GB', 'req.ram_cons': '16 GB, sostituibile (SO-DIMM)',
+    'req.disco': 'Disco', 'req.disco_min': 'SSD da 128 GB (M.2 NVMe o SATA)', 'req.disco_cons': 'SSD da 256–512 GB',
+    'req.os': 'Sistema', 'req.os_min': 'Windows 11 Pro', 'req.os_cons': '—',
+    'req.rete': 'Rete', 'req.rete_min': 'Porta Ethernet (RJ45) collegata via cavo', 'req.rete_cons': '—',
+    'req.alim': 'Alimentazione', 'req.alim_min': '—', 'req.alim_cons': 'Alimentatore esterno; accensione automatica dopo un blackout («Restore on AC»)',
+    'req.monitor': 'Senza monitor', 'req.monitor_min': 'Finta spina HDMI («dummy plug»)', 'req.monitor_cons': '—'
+  },
+  en: {
+    'meta.title': 'CORE-54 — Client area', 'hdr.title': 'Client area', 'hdr.logout': 'Log out',
+    'login.title': 'Log in', 'login.email': 'Email', 'login.password': 'Password', 'login.btn': 'Enter',
+    'tab.corso': '🎓 Course', 'tab.strategie': '🗺️ Strategies', 'tab.calc': '🧮 Calculator',
+    'corso.upsell': 'Episodes marked <b>FREE</b> are always available. The rest of the course unlocks with Lifetime.',
+    'corso.modulo': 'Module', 'corso.empty': 'No episodes available at the moment.',
+    'corso.locked_alert': 'This episode unlocks with Lifetime. FREE episodes are always available.',
+    'mod.1': 'The strategy in brief', 'mod.2': 'Fundamentals', 'mod.3': 'The strategy in detail', 'mod.4': 'Opening the accounts', 'mod.5': 'The app, page by page', 'mod.6': 'Assisted Mode',
+    'note.video': 'Videos are currently in Italian.', 'note.mappe': '',
+    'strat.title': 'Strategy maps', 'strat.sub': 'The strategy paths, Challenge phase and Funded phase.',
+    'strat.50k': 'FundedNext 50K', 'strat.100k': 'FundedNext 100K', 'strat.goat100k': 'GOAT 100K',
+    'calc.title': 'SL / TP calculator', 'calc.sub': 'Enter the prop data: get the SL and TP values to set on Core54 and the effect on the broker balance.',
+    'ris.locked_t': 'Content reserved for Lifetime clients', 'ris.locked_p': 'Strategies and calculator unlock with the Lifetime plan.',
+    'ris.loading': 'Loading…', 'ris.error': 'Unable to load the content. Please try again shortly; if the problem persists write to info@core54.app.',
+    'player.loading': 'Loading…', 'player.error': 'Unable to play the video:',
+    'tab.download': '⬇️ Download', 'dl.title': 'Download', 'dl.sub': 'Bridge, PC setup guide and strategy PDFs.',
+    'dl.sec_bridge': 'Program', 'dl.sec_pc': 'Guides', 'dl.sec_strat': 'Strategy PDFs', 'dl.btn_row': 'Download', 'dl.det': "What's new and install notes",
+    'dl.locked_pc': 'The PC setup guide can be downloaded with an active subscription.', 'dl.locked_strat': 'Strategy PDFs are unlocked with the Lifetime plan.',
+    'dl.versione': 'Version', 'dl.btn': 'Download the Bridge', 'dl.novita': "What's new",
+    'dl.nota': 'If Windows shows <b>"Windows protected your PC"</b>: click <b>More info</b> and then <b>Run anyway</b>. To update, just press <b>Update the Bridge on the PC now</b> in the app, or install over the old version: the link with the app is kept.',
+    'dl.locked_t': 'Reserved for CORE-54 clients', 'dl.locked_p': 'The Bridge can be downloaded with an active subscription. If you have just subscribed and still see it locked, write to info@core54.app.',
+    'dl.err_link': 'Download failed. Please try again; if the problem persists write to info@core54.app.',
+    'req.title': 'Dedicated PC requirements', 'req.intro': 'For a PC running the Bridge, 2–3 MetaTrader 5 terminals and Chrome Remote Desktop, switched on 24 hours a day.',
+    'req.voce': 'Item', 'req.min': 'Minimum', 'req.cons': 'Recommended',
+    'req.cpu': 'Processor', 'req.cpu_min': '4 cores, turbo 3.4 GHz or higher, PassMark above 3500 (e.g. Intel N95, Core i3 8th gen or newer, Ryzen 3000)', 'req.cpu_cons': 'PassMark above 5000 (e.g. Intel N100/N150, Ryzen 5 5000)',
+    'req.ram': 'RAM', 'req.ram_min': '8 GB', 'req.ram_cons': '16 GB, replaceable (SO-DIMM)',
+    'req.disco': 'Storage', 'req.disco_min': '128 GB SSD (M.2 NVMe or SATA)', 'req.disco_cons': '256–512 GB SSD',
+    'req.os': 'System', 'req.os_min': 'Windows 11 Pro', 'req.os_cons': '—',
+    'req.rete': 'Network', 'req.rete_min': 'Ethernet port (RJ45) connected by cable', 'req.rete_cons': '—',
+    'req.alim': 'Power', 'req.alim_min': '—', 'req.alim_cons': 'External power supply; automatic power-on after a blackout ("Restore on AC")',
+    'req.monitor': 'No monitor', 'req.monitor_min': 'HDMI dummy plug', 'req.monitor_cons': '—'
+  },
+  de: {
+    'meta.title': 'CORE-54 — Kundenbereich', 'hdr.title': 'Kundenbereich', 'hdr.logout': 'Abmelden',
+    'login.title': 'Anmelden', 'login.email': 'E-Mail', 'login.password': 'Passwort', 'login.btn': 'Einloggen',
+    'tab.corso': '🎓 Kurs', 'tab.strategie': '🗺️ Strategien', 'tab.calc': '🧮 Rechner',
+    'corso.upsell': 'Mit <b>FREE</b> markierte Folgen sind immer verfügbar. Der Rest des Kurses wird mit Lifetime freigeschaltet.',
+    'corso.modulo': 'Modul', 'corso.empty': 'Derzeit sind keine Folgen verfügbar.',
+    'corso.locked_alert': 'Diese Folge wird mit Lifetime freigeschaltet. FREE-Folgen sind immer verfügbar.',
+    'mod.1': 'Die Strategie kurz erklärt', 'mod.2': 'Grundlagen', 'mod.3': 'Die Strategie im Detail', 'mod.4': 'Konten eröffnen', 'mod.5': 'Die App Seite für Seite', 'mod.6': 'Assistierter Modus',
+    'note.video': 'Die Videos sind derzeit auf Italienisch.', 'note.mappe': '',
+    'strat.title': 'Strategiekarten', 'strat.sub': 'Die Pfade der Strategie, Challenge-Phase und Funded-Phase.',
+    'strat.50k': 'FundedNext 50K', 'strat.100k': 'FundedNext 100K', 'strat.goat100k': 'GOAT 100K',
+    'calc.title': 'SL/TP-Rechner', 'calc.sub': 'Gib die Daten der Prop ein: Du erhältst die SL- und TP-Werte für Core54 und die Auswirkung auf den Broker-Saldo.',
+    'ris.locked_t': 'Inhalt nur für Lifetime-Kunden', 'ris.locked_p': 'Strategien und Rechner werden mit dem Lifetime-Plan freigeschaltet.',
+    'ris.loading': 'Wird geladen…', 'ris.error': 'Inhalt konnte nicht geladen werden. Versuche es gleich noch einmal; wenn das Problem bleibt, schreib an info@core54.app.',
+    'player.loading': 'Wird geladen…', 'player.error': 'Video kann nicht abgespielt werden:',
+    'tab.download': '⬇️ Download', 'dl.title': 'Download', 'dl.sub': 'Bridge, Anleitung für den PC und Strategie-PDFs.',
+    'dl.sec_bridge': 'Programm', 'dl.sec_pc': 'Anleitungen', 'dl.sec_strat': 'Strategie-PDFs', 'dl.btn_row': 'Herunterladen', 'dl.det': 'Neuerungen und Installationshinweise',
+    'dl.locked_pc': 'Die Anleitung für den PC gibt es mit einem aktiven Abo.', 'dl.locked_strat': 'Die Strategie-PDFs werden mit dem Lifetime-Plan freigeschaltet.',
+    'dl.versione': 'Version', 'dl.btn': 'Bridge herunterladen', 'dl.novita': 'Neu',
+    'dl.nota': 'Wenn Windows <b>„Der Computer wurde durch Windows geschützt“</b> anzeigt: auf <b>Weitere Informationen</b> und dann auf <b>Trotzdem ausführen</b> klicken. Zum Aktualisieren einfach in der App <b>Bridge am PC jetzt aktualisieren</b> tippen oder über die alte Version installieren: die Verbindung mit der App bleibt erhalten.',
+    'dl.locked_t': 'Nur für CORE-54-Kunden', 'dl.locked_p': 'Die Bridge kann mit einem aktiven Abo heruntergeladen werden. Wenn du gerade ein Abo abgeschlossen hast und sie noch gesperrt ist, schreib an info@core54.app.',
+    'dl.err_link': 'Download fehlgeschlagen. Versuche es erneut; wenn das Problem bleibt, schreib an info@core54.app.',
+    'req.title': 'Anforderungen an den eigenen PC', 'req.intro': 'Für einen PC, auf dem die Bridge, 2–3 MetaTrader 5 und Chrome Remote Desktop laufen, rund um die Uhr eingeschaltet.',
+    'req.voce': 'Komponente', 'req.min': 'Minimum', 'req.cons': 'Empfohlen',
+    'req.cpu': 'Prozessor', 'req.cpu_min': '4 Kerne, Turbo ab 3,4 GHz, PassMark über 3500 (z. B. Intel N95, Core i3 ab 8. Generation, Ryzen 3000)', 'req.cpu_cons': 'PassMark über 5000 (z. B. Intel N100/N150, Ryzen 5 5000)',
+    'req.ram': 'RAM', 'req.ram_min': '8 GB', 'req.ram_cons': '16 GB, austauschbar (SO-DIMM)',
+    'req.disco': 'Speicher', 'req.disco_min': 'SSD mit 128 GB (M.2 NVMe oder SATA)', 'req.disco_cons': 'SSD mit 256–512 GB',
+    'req.os': 'System', 'req.os_min': 'Windows 11 Pro', 'req.os_cons': '—',
+    'req.rete': 'Netzwerk', 'req.rete_min': 'Ethernet-Anschluss (RJ45), per Kabel verbunden', 'req.rete_cons': '—',
+    'req.alim': 'Stromversorgung', 'req.alim_min': '—', 'req.alim_cons': 'Externes Netzteil; automatisches Einschalten nach einem Stromausfall („Restore on AC“)',
+    'req.monitor': 'Ohne Monitor', 'req.monitor_min': 'HDMI-Dummy-Stecker („Dummy Plug“)', 'req.monitor_cons': '—'
+  },
+  es: {
+    'meta.title': 'CORE-54 — Área de clientes', 'hdr.title': 'Área de clientes', 'hdr.logout': 'Salir',
+    'login.title': 'Inicia sesión', 'login.email': 'Email', 'login.password': 'Contraseña', 'login.btn': 'Entrar',
+    'tab.corso': '🎓 Curso', 'tab.strategie': '🗺️ Estrategias', 'tab.calc': '🧮 Calculadora',
+    'corso.upsell': 'Los episodios marcados como <b>FREE</b> están siempre disponibles. El resto del curso se desbloquea con Lifetime.',
+    'corso.modulo': 'Módulo', 'corso.empty': 'No hay episodios disponibles por el momento.',
+    'corso.locked_alert': 'Este episodio se desbloquea con Lifetime. Los episodios FREE están siempre disponibles.',
+    'mod.1': 'La estrategia en resumen', 'mod.2': 'Fundamentos', 'mod.3': 'La estrategia en detalle', 'mod.4': 'Abrir las cuentas', 'mod.5': 'La app, página a página', 'mod.6': 'Modo Asistido',
+    'note.video': 'Por ahora los vídeos están en italiano.', 'note.mappe': '',
+    'strat.title': 'Mapas estratégicos', 'strat.sub': 'Los recorridos de la estrategia, fase de Desafío y fase Real.',
+    'strat.50k': 'FundedNext 50K', 'strat.100k': 'FundedNext 100K', 'strat.goat100k': 'GOAT 100K',
+    'calc.title': 'Calculadora SL / TP', 'calc.sub': 'Introduce los datos de la prop: obtén los valores de SL y TP para configurar en Core54 y el efecto en el saldo del bróker.',
+    'ris.locked_t': 'Contenido reservado a clientes Lifetime', 'ris.locked_p': 'Las estrategias y la calculadora se desbloquean con el plan Lifetime.',
+    'ris.loading': 'Cargando…', 'ris.error': 'No se ha podido cargar el contenido. Inténtalo de nuevo en breve; si el problema continúa escribe a info@core54.app.',
+    'player.loading': 'Cargando…', 'player.error': 'No se puede reproducir el vídeo:',
+    'tab.download': '⬇️ Descargas', 'dl.title': 'Descargas', 'dl.sub': 'Bridge, guía del PC y PDF de las estrategias.',
+    'dl.sec_bridge': 'Programa', 'dl.sec_pc': 'Guías', 'dl.sec_strat': 'PDF de estrategias', 'dl.btn_row': 'Descargar', 'dl.det': 'Novedades y notas de instalación',
+    'dl.locked_pc': 'La guía del PC se descarga con una suscripción activa.', 'dl.locked_strat': 'Los PDF de las estrategias se desbloquean con el plan Lifetime.',
+    'dl.versione': 'Versión', 'dl.btn': 'Descargar el Bridge', 'dl.novita': 'Novedades',
+    'dl.nota': 'Si Windows muestra <b>«Windows protegió su PC»</b>: pulsamos <b>Más información</b> y luego <b>Ejecutar de todas formas</b>. Para actualizar basta con pulsar <b>Actualizar ahora el Bridge en el PC</b> en la app, o instalar encima de la versión anterior: la conexión con la app se mantiene.',
+    'dl.locked_t': 'Reservado a los clientes de CORE-54', 'dl.locked_p': 'El Bridge se descarga con una suscripción activa. Si acabas de suscribirte y sigue bloqueado, escribe a info@core54.app.',
+    'dl.err_link': 'No se ha podido descargar. Inténtalo de nuevo; si el problema continúa escribe a info@core54.app.',
+    'req.title': 'Requisitos del PC dedicado', 'req.intro': 'Para un PC que ejecuta el Bridge, 2–3 MetaTrader 5 y Chrome Remote Desktop, encendido las 24 horas.',
+    'req.voce': 'Elemento', 'req.min': 'Mínimo', 'req.cons': 'Recomendado',
+    'req.cpu': 'Procesador', 'req.cpu_min': '4 núcleos, turbo desde 3,4 GHz, PassMark por encima de 3500 (p. ej. Intel N95, Core i3 desde la 8.ª generación, Ryzen 3000)', 'req.cpu_cons': 'PassMark por encima de 5000 (p. ej. Intel N100/N150, Ryzen 5 5000)',
+    'req.ram': 'RAM', 'req.ram_min': '8 GB', 'req.ram_cons': '16 GB, reemplazable (SO-DIMM)',
+    'req.disco': 'Disco', 'req.disco_min': 'SSD de 128 GB (M.2 NVMe o SATA)', 'req.disco_cons': 'SSD de 256–512 GB',
+    'req.os': 'Sistema', 'req.os_min': 'Windows 11 Pro', 'req.os_cons': '—',
+    'req.rete': 'Red', 'req.rete_min': 'Puerto Ethernet (RJ45) conectado por cable', 'req.rete_cons': '—',
+    'req.alim': 'Alimentación', 'req.alim_min': '—', 'req.alim_cons': 'Fuente de alimentación externa; encendido automático tras un apagón («Restore on AC»)',
+    'req.monitor': 'Sin monitor', 'req.monitor_min': 'Conector HDMI simulado («dummy plug»)', 'req.monitor_cons': '—'
+  },
+  pl: {
+    'meta.title': 'CORE-54 — Strefa klienta', 'hdr.title': 'Strefa klienta', 'hdr.logout': 'Wyloguj',
+    'login.title': 'Zaloguj się', 'login.email': 'E-mail', 'login.password': 'Hasło', 'login.btn': 'Wejdź',
+    'tab.corso': '🎓 Kurs', 'tab.strategie': '🗺️ Strategie', 'tab.calc': '🧮 Kalkulator',
+    'corso.upsell': 'Odcinki oznaczone jako <b>FREE</b> są zawsze dostępne. Reszta kursu odblokowuje się z Lifetime.',
+    'corso.modulo': 'Moduł', 'corso.empty': 'Obecnie brak dostępnych odcinków.',
+    'corso.locked_alert': 'Ten odcinek odblokowuje się z Lifetime. Odcinki FREE są zawsze dostępne.',
+    'mod.1': 'Strategia w skrócie', 'mod.2': 'Podstawy', 'mod.3': 'Strategia szczegółowo', 'mod.4': 'Otwieranie kont', 'mod.5': 'Aplikacja strona po stronie', 'mod.6': 'Tryb Wspomagany',
+    'note.video': 'Filmy są na razie w języku włoskim.', 'note.mappe': '',
+    'strat.title': 'Mapy strategiczne', 'strat.sub': 'Ścieżki strategii, faza wyzwania i faza finansowana.',
+    'strat.50k': 'FundedNext 50K', 'strat.100k': 'FundedNext 100K', 'strat.goat100k': 'GOAT 100K',
+    'calc.title': 'Kalkulator SL / TP', 'calc.sub': 'Wpisz dane propa: otrzymasz wartości SL i TP do ustawienia w Core54 oraz wpływ na saldo u brokera.',
+    'ris.locked_t': 'Treść tylko dla klientów Lifetime', 'ris.locked_p': 'Strategie i kalkulator odblokowują się z planem Lifetime.',
+    'ris.loading': 'Ładowanie…', 'ris.error': 'Nie udało się załadować treści. Spróbuj ponownie za chwilę; jeśli problem się powtarza, napisz na info@core54.app.',
+    'player.loading': 'Ładowanie…', 'player.error': 'Nie można odtworzyć filmu:',
+    'tab.download': '⬇️ Pobieranie', 'dl.title': 'Pobieranie', 'dl.sub': 'Bridge, instrukcja dla komputera i PDF-y strategii.',
+    'dl.sec_bridge': 'Program', 'dl.sec_pc': 'Instrukcje', 'dl.sec_strat': 'PDF-y strategii', 'dl.btn_row': 'Pobierz', 'dl.det': 'Nowości i uwagi o instalacji',
+    'dl.locked_pc': 'Instrukcję dla komputera pobierzesz z aktywną subskrypcją.', 'dl.locked_strat': 'PDF-y strategii odblokowuje plan Lifetime.',
+    'dl.versione': 'Wersja', 'dl.btn': 'Pobierz Bridge', 'dl.novita': 'Nowości',
+    'dl.nota': 'Jeśli Windows pokaże <b>„System Windows ochronił ten komputer”</b>: klikamy <b>Więcej informacji</b>, a potem <b>Uruchom mimo to</b>. Aby zaktualizować, wystarczy w aplikacji nacisnąć <b>Zaktualizuj teraz Bridge na komputerze</b> albo zainstalować na starej wersji: połączenie z aplikacją zostaje.',
+    'dl.locked_t': 'Tylko dla klientów CORE-54', 'dl.locked_p': 'Bridge można pobrać z aktywną subskrypcją. Jeśli właśnie wykupiłeś subskrypcję i nadal widzisz blokadę, napisz na info@core54.app.',
+    'dl.err_link': 'Pobieranie nie powiodło się. Spróbuj ponownie; jeśli problem się powtarza, napisz na info@core54.app.',
+    'req.title': 'Wymagania dla dedykowanego komputera', 'req.intro': 'Dla komputera, na którym działa Bridge, 2–3 MetaTrader 5 i Pulpit zdalny Chrome, włączonego 24 godziny na dobę.',
+    'req.voce': 'Element', 'req.min': 'Minimum', 'req.cons': 'Zalecane',
+    'req.cpu': 'Procesor', 'req.cpu_min': '4 rdzenie, turbo od 3,4 GHz, PassMark powyżej 3500 (np. Intel N95, Core i3 od 8. generacji, Ryzen 3000)', 'req.cpu_cons': 'PassMark powyżej 5000 (np. Intel N100/N150, Ryzen 5 5000)',
+    'req.ram': 'RAM', 'req.ram_min': '8 GB', 'req.ram_cons': '16 GB, wymienna (SO-DIMM)',
+    'req.disco': 'Dysk', 'req.disco_min': 'SSD 128 GB (M.2 NVMe lub SATA)', 'req.disco_cons': 'SSD 256–512 GB',
+    'req.os': 'System', 'req.os_min': 'Windows 11 Pro', 'req.os_cons': '—',
+    'req.rete': 'Sieć', 'req.rete_min': 'Port Ethernet (RJ45) podłączony kablem', 'req.rete_cons': '—',
+    'req.alim': 'Zasilanie', 'req.alim_min': '—', 'req.alim_cons': 'Zewnętrzny zasilacz; automatyczne włączenie po zaniku prądu („Restore on AC”)',
+    'req.monitor': 'Bez monitora', 'req.monitor_min': 'Zaślepka HDMI („dummy plug”)', 'req.monitor_cons': '—'
   }
+};
+let lang = 'it';
+const t = (k) => (I18N[lang] && I18N[lang][k] !== undefined) ? I18N[lang][k] : I18N.it[k];
 
-  $('year').textContent = new Date().getFullYear();
+function applicaLingua(l) {
+  lang = LANGS.includes(l) ? l : 'it';
+  document.documentElement.lang = lang;
+  document.title = t('meta.title');
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.getAttribute('data-i18n-html')); });
+  document.querySelectorAll('.lang-note').forEach(el => { el.hidden = !el.textContent; });
+  document.getElementById('langSelect').value = lang;
+  aggiornaLingueUI();
+  try { localStorage.setItem('core54_lang', lang); } catch (e) {}
+}
 
-  // ═══ FORM "RICHIEDI L'ACCESSO" ═══
-  // Chiave "publishable" (anon) del progetto Supabase — NON è segreta, è fatta per stare nel codice pubblico.
-  var SUPABASE_ANON_KEY = 'sb_publishable_T4WiIXTIbQjtSh7IQc0pVQ_Vgg7_gPp';
-  var ACCESS_FUNCTION_URL = 'https://ppyyvmyhprxahiwijyeu.supabase.co/functions/v1/clever-task';
 
-  var accessForm = $('access-form');
-  var accessMsg = $('access-msg');
-  var accessSubmit = $('access-submit');
-  var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  // Prefisso internazionale obbligatorio (+ seguito da cifre, spazi ammessi), lunghezza plausibile.
-  var TEL_RE = /^\+[0-9][0-9\s]{6,16}$/;
+if (SUPABASE_ANON_KEY === 'INCOLLA_QUI_LA_ANON_KEY_SUPABASE') {
+  document.getElementById('configError').style.display = 'block';
+}
 
-  function setFieldError(id, msg){
-    var input = $('f-' + id), err = $('err-' + id);
-    if (msg) { input.classList.add('invalid'); err.textContent = msg; err.classList.add('show'); }
-    else { input.classList.remove('invalid'); err.textContent = ''; err.classList.remove('show'); }
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: { persistSession: true, autoRefreshToken: true },
+});
+
+const $ = (id) => document.getElementById(id);
+let corsoEpisodi = [];
+let hasLifetimeLocal = false;
+let isAdminLocal = false;
+let profiloAdmin = false;       // profiles.is_admin — usato SOLO per il messaggio dei contenuti riservati
+const cacheRiservati = {};      // nome file → HTML già scaricato in questa sessione
+const TABS = ['corso', 'strategie', 'calcolatore', 'download'];
+const tabDaHash = (location.hash || '').replace('#', '').toLowerCase();
+let tabAttiva = TABS.includes(tabDaHash) ? tabDaHash : 'corso';
+
+async function boot() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) await mostraCorso(session);
+  else mostraLogin();
+}
+
+function mostraLogin() {
+  $('loginCard').style.display = 'block';
+  $('tabs').style.display = 'none';
+  document.querySelectorAll('.pane').forEach(p => p.classList.remove('on'));
+  $('logoutBtn').style.display = 'none';
+  $('main').classList.remove('wide');
+  Object.keys(cacheRiservati).forEach(k => delete cacheRiservati[k]);
+  $('strat-body').innerHTML = '';
+  $('calc-body').innerHTML = '';
+  $('dl-body').innerHTML = '';
+}
+
+async function mostraCorso(session) {
+  $('loginCard').style.display = 'none';
+  $('tabs').style.display = 'flex';
+  $('logoutBtn').style.display = 'inline-block';
+
+  isAdminLocal = session.user?.role === 'admin';
+
+  const [{ data: episodi }, { data: abbonamenti }, { data: profilo }] = await Promise.all([
+    sb.from('corso_episodi').select('*').eq('pubblicato', true).order('modulo', { ascending: true }).order('ordine', { ascending: true }),
+    sb.from('abbonamenti_utenti').select('tipo, stato_abbonamento').eq('client_id', session.user.id),
+    sb.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle(),
+  ]);
+
+  corsoEpisodi = episodi || [];
+  hasLifetimeLocal = (abbonamenti || []).some(a => a.tipo === 'lifetime' && (a.stato_abbonamento || '').toLowerCase() === 'attivo');
+  profiloAdmin = !!(profilo && profilo.is_admin);
+
+  // NOTA: questo controllo lato client serve SOLO per mostrare lucchetti/badge nella UI. Il vero
+  // controllo di accesso — quello che conta davvero — vive nella Edge Function get-video-token,
+  // interrogata al momento di aprire un episodio: è lì che si decide se il link firmato viene
+  // rilasciato o no, non qui.
+  renderLista();
+  mostraTab(tabAttiva);
+}
+
+// ─── Schede ───
+function mostraTab(nome) {
+  tabAttiva = nome;
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === nome));
+  document.querySelectorAll('.pane').forEach(p => p.classList.toggle('on', p.id === 'pane-' + nome));
+  $('main').classList.toggle('wide', nome === 'strategie' || nome === 'calcolatore');
+  if (nome === 'strategie') caricaStrategia();
+  if (nome === 'calcolatore') caricaRiservato('calcolatore.html', $('calc-body'), false);
+  if (nome === 'download') caricaDownload();
+}
+
+// ─── Download: Bridge, istruzioni per il PC, PDF delle strategie ───
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+let dlCarico = 0;   // numero dell'ultima richiesta: una risposta più vecchia (cambio lingua/scheda) si scarta
+
+// PDF scaricabili. Il file sta in un bucket PRIVATO di Supabase Storage e si scarica con un link firmato:
+// a decidere chi può è la policy del bucket. Istruzioni PC: stesso bucket e stessa regola del Bridge ("bridge");
+// Strategie: bucket "riservato" (solo Lifetime e admin). Per aggiungere una strategia basta una riga qui sotto
+// e il file nel bucket (Dashboard > Storage).
+const PDF_PC = { bucket: BUCKET_BRIDGE, file: 'CORE-54_Mini_PC_Configurazione.pdf', nome: 'CORE-54 · Istruzioni per configurare il PC', desc: 'Come scegliere e preparare il PC per la Modalità Assistita: requisiti, installazione, accesso da remoto.' };
+const PDF_STRATEGIE = [
+  { bucket: BUCKET_RISERVATO, file: 'CORE-54_Vademecum_FundedNext_100K.pdf', nome: 'FundedNext · Stellar 1-Step · 100K', desc: 'Regole, acquisto, configurazione di CORE-54 e mappe della strategia.' },
+  { bucket: BUCKET_RISERVATO, file: 'CORE-54_Vademecum_FundedNext_50K.pdf', nome: 'FundedNext · Stellar 1-Step · 50K', desc: 'Regole, acquisto, configurazione di CORE-54 e mappe della strategia.' },
+  { bucket: BUCKET_RISERVATO, file: 'CORE-54_Vademecum_GOAT_Funded_Trader_100K.pdf', nome: 'GOAT Funded Trader · 1-Step · 100K', desc: 'Regole, acquisto, configurazione di CORE-54 e mappe della strategia.' },
+];
+
+const rigaFile = (ico, nome, meta, bottone, bloccata) => `
+      <div class="dl-row${bloccata ? ' lock' : ''}">
+        <div class="dl-ico">${ico}</div>
+        <div class="dl-n"><div class="dl-t">${esc(nome)}</div><div class="dl-m">${meta}</div></div>
+        ${bottone}
+      </div>`;
+const bottonePdf = (p) => `<button class="dl-bt" data-bucket="${esc(p.bucket)}" data-file="${esc(p.file)}">${t('dl.btn_row')}</button>`;
+const bloccato = '<button class="dl-bt" disabled aria-label="locked">🔒</button>';
+
+async function caricaDownload() {
+  const box = $('dl-body');
+  const mio = ++dlCarico;
+  box.innerHTML = `<div class="loading-box">${t('ris.loading')}</div>`;
+  const { data: ril, error } = await sb.from('bridge_rilascio')
+    .select('versione, file_nome, dimensione_mb, novita, pubblicato_il').eq('id', 1).maybeSingle();
+  if (mio !== dlCarico) return;
+  // Prova del permesso: se la policy di Storage non concede il file, la firma fallisce.
+  let bridgeOk = false;
+  if (!error && ril) {
+    const prova = await sb.storage.from(BUCKET_BRIDGE).createSignedUrl(ril.file_nome, 30);
+    if (mio !== dlCarico) return;
+    bridgeOk = !prova.error && !!prova.data;
   }
-  ['nome', 'cognome', 'email', 'telefono'].forEach(function(id){
-    $('f-' + id).addEventListener('input', function(){ setFieldError(id, ''); });
-  });
-  function leggiPayload(){
-    return {
-      nome: $('f-nome').value.trim(),
-      cognome: $('f-cognome').value.trim(),
-      email: $('f-email').value.trim(),
-      telefono: $('f-telefono').value.trim(),
-      piattaforma: $('f-piattaforma').value,
-      messaggio: $('f-messaggio').value.trim(),
-      sito_web: $('f-sito-web').value // honeypot, resta vuoto per un utente reale
-    };
-  }
-  // Ritorna il primo campo non valido (o null se tutto ok), impostando i messaggi sotto ai campi.
-  function validaCampi(p){
-    setFieldError('nome', p.nome ? '' : t('form.err_nome'));
-    setFieldError('cognome', p.cognome ? '' : t('form.err_cognome'));
-    setFieldError('email', !p.email ? t('form.err_email_req') : (!EMAIL_RE.test(p.email) ? t('form.err_email_bad') : ''));
-    setFieldError('telefono', !p.telefono ? t('form.err_tel_req') : (!TEL_RE.test(p.telefono) ? t('form.err_tel_bad') : ''));
-    var ordine = ['nome', 'cognome', 'email', 'telefono'];
-    for (var i = 0; i < ordine.length; i++) {
-      if ($('err-' + ordine[i]).classList.contains('show')) return $('f-' + ordine[i]);
-    }
-    return null;
-  }
+  const strategieOk = hasLifetimeLocal || profiloAdmin || isAdminLocal;
 
-  accessForm.addEventListener('submit', function(e){
-    e.preventDefault();
-    accessMsg.textContent = '';
-    accessMsg.className = 'form-msg';
-    var payload = leggiPayload();
-    var primoNonValido = validaCampi(payload);
-    if (primoNonValido) {
-      primoNonValido.focus();
-      accessMsg.textContent = t('form.err_fields');
-      accessMsg.className = 'form-msg err';
+  let bridge;
+  if (error || !ril) {
+    bridge = `<div class="dl-item"><div class="err-box">${t('ris.error')}</div></div>`;
+  } else if (!bridgeOk) {
+    bridge = `<div class="dl-item">${rigaFile('🖥️', 'CORE-54 Bridge', t('dl.locked_p'), bloccato, true)}</div>`;
+  } else {
+    const data = ril.pubblicato_il ? new Date(ril.pubblicato_il).toLocaleDateString(lang) : '';
+    const mb = ril.dimensione_mb ? ` · ${esc(ril.dimensione_mb)} MB` : '';
+    const novita = (ril.novita && (ril.novita[lang] || ril.novita.it)) || '';
+    bridge = `<div class="dl-item">${rigaFile('🖥️', 'CORE-54 Bridge',
+      `${t('dl.versione')} ${esc(ril.versione)}${data ? ' · ' + esc(data) : ''} · Windows 10/11${mb}`,
+      `<button class="dl-bt" id="dl-btn">${t('dl.btn_row')}</button>`, false)}
+      <div class="dl-err" id="dl-err"></div>
+      <details class="dl-det"><summary>${t('dl.det')}</summary><div class="dl-in">
+        ${novita ? `<div class="dl-novita" style="margin-top:0"><b>${t('dl.novita')} ${esc(ril.versione)}:</b> ${esc(novita)}</div>` : ''}
+        <div class="dl-nota">${t('dl.nota')}</div></div></details></div>`;
+  }
+  const pc = `<div class="dl-item">${rigaFile('📄', PDF_PC.nome, bridgeOk ? esc(PDF_PC.desc) : t('dl.locked_pc'), bridgeOk ? bottonePdf(PDF_PC) : bloccato, !bridgeOk)}<div class="dl-err"></div></div>`;
+  const strat = PDF_STRATEGIE.map(p => `<div class="dl-item">${rigaFile('📄', p.nome, strategieOk ? esc(p.desc) : t('dl.locked_strat'), strategieOk ? bottonePdf(p) : bloccato, !strategieOk)}<div class="dl-err"></div></div>`).join('');
+  box.innerHTML = `
+    <div class="dl-grp">${t('dl.sec_bridge')}</div><div class="dl-list">${bridge}</div>
+    <div class="dl-grp">${t('dl.sec_pc')}</div><div class="dl-list">${pc}</div>
+    <div class="dl-grp">${t('dl.sec_strat')}</div><div class="dl-list">${strat}</div>`;
+  if (bridgeOk) $('dl-btn').addEventListener('click', () => scaricaFile($('dl-btn'), BUCKET_BRIDGE, ril.file_nome));
+  box.querySelectorAll('button[data-file]').forEach(b => b.addEventListener('click', () => scaricaFile(b, b.dataset.bucket, b.dataset.file)));
+}
+
+async function scaricaFile(btn, bucket, fileNome) {
+  const item = btn.closest('.dl-item');
+  const err = item && item.querySelector('.dl-err');
+  if (err) err.textContent = '';
+  btn.disabled = true;
+  try {
+    // Link nuovo a ogni clic (scade in DURATA_LINK_SEC): mai un link vecchio rimasto nella pagina.
+    const { data, error } = await sb.storage.from(bucket).createSignedUrl(fileNome, DURATA_LINK_SEC, { download: true });
+    if (error || !data) { if (err) err.textContent = t('dl.err_link'); return; }
+    window.location.href = data.signedUrl;
+  } catch (e) {
+    if (err) err.textContent = t('dl.err_link');
+  } finally {
+    btn.disabled = false;
+  }
+}
+document.querySelectorAll('#tabs button').forEach(b => b.addEventListener('click', () => mostraTab(b.dataset.tab)));
+
+document.querySelectorAll('#strat-switch button').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('#strat-switch button').forEach(x => x.classList.toggle('on', x === b));
+  caricaStrategia();
+}));
+function caricaStrategia() {
+  const file = document.querySelector('#strat-switch button.on').dataset.file;
+  caricaRiservato(file, $('strat-body'), true);
+}
+
+// Script iniettato nel contenuto: comunica all'area clienti l'altezza reale della pagina, così
+// l'iframe si adatta senza doppie barre di scorrimento. L'iframe è in sandbox "allow-scripts"
+// SENZA "allow-same-origin": il contenuto non può leggere la sessione di login di questa pagina.
+const ALTEZZA_JS = '<script>(function(){function h(){var b=document.body;if(!b)return;var r=b.getBoundingClientRect();var m=parseFloat(getComputedStyle(b).marginBottom)||0;parent.postMessage({c54h:Math.ceil(r.bottom+window.scrollY+m)},"*")}addEventListener("load",h);addEventListener("resize",h);document.addEventListener("click",function(){setTimeout(h,60)});if(window.ResizeObserver){new ResizeObserver(h).observe(document.documentElement)}setTimeout(h,250);setTimeout(h,1200)})();<\/script>';
+
+function conAltezza(html) {
+  // 1) lingua scelta, disponibile al contenuto PRIMA dei suoi script (window.C54_LANG)
+  const LANG_JS = '<script>window.C54_LANG=' + JSON.stringify(lang) + ';<\/script>';
+  const h = html.search(/<head[^>]*>/i);
+  if (h >= 0) { const fine = html.indexOf('>', h) + 1; html = html.slice(0, fine) + LANG_JS + html.slice(fine); }
+  else html = LANG_JS + html;
+  // 2) script che comunica l'altezza reale alla pagina
+  const i = html.toLowerCase().lastIndexOf('</body>');
+  return i >= 0 ? html.slice(0, i) + ALTEZZA_JS + html.slice(i) : html + ALTEZZA_JS;
+}
+
+async function caricaRiservato(file, contenitore, sfondoCarta) {
+  if (!hasLifetimeLocal && !profiloAdmin && !isAdminLocal) {
+    contenitore.innerHTML = `<div class="locked-box"><div class="ico">🔒</div><h3>${t('ris.locked_t')}</h3><p>${t('ris.locked_p')}</p></div>`;
+    contenitore.dataset.file = '';
+    return;
+  }
+  if (contenitore.dataset.file === file && contenitore.dataset.lang === lang && contenitore.querySelector('iframe')) return; // già mostrato
+  contenitore.dataset.file = file;
+  contenitore.dataset.lang = lang;
+
+  let html = cacheRiservati[file];
+  if (!html) {
+    contenitore.innerHTML = `<div class="loading-box">${t('ris.loading')}</div>`;
+    const { data, error } = await sb.storage.from(BUCKET_RISERVATO).download(file);
+    if (contenitore.dataset.file !== file) return; // nel frattempo l'utente ha cambiato voce
+    if (error || !data) {
+      contenitore.innerHTML = `<div class="err-box">${t('ris.error')}</div>`;
+      contenitore.dataset.file = '';
       return;
     }
-    if (SUPABASE_ANON_KEY.indexOf('INCOLLA_QUI') === 0) {
-      accessMsg.innerHTML = t('form.err_conn');
-      accessMsg.className = 'form-msg err';
-      return;
-    }
-    accessSubmit.disabled = true;
-    accessSubmit.textContent = t('form.sending');
-    fetch(ACCESS_FUNCTION_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'apikey': SUPABASE_ANON_KEY },
-      body: JSON.stringify(payload)
-    })
-      .then(function(res){ return res.json().then(function(data){ return { ok: res.ok, data: data }; }); })
-      .then(function(result){
-        if (result.ok && result.data && result.data.ok) {
-          accessForm.reset();
-          accessForm.style.display = 'none';
-          accessMsg.innerHTML = t('form.ok');
-          accessMsg.className = 'form-msg ok';
-          accessMsg.style.display = 'block';
-        } else {
-          throw new Error('invio_fallito');
-        }
-      })
-      .catch(function(){
-        accessMsg.innerHTML = t('form.err_send');
-        accessMsg.className = 'form-msg err';
-      })
-      .finally(function(){
-        accessSubmit.disabled = false;
-        accessSubmit.textContent = t('form.submit');
-      });
+    html = await data.text();
+    cacheRiservati[file] = html;
+  }
+
+  const wrap = document.createElement('div');
+  wrap.className = 'frame-wrap' + (sfondoCarta ? ' paper' : '');
+  const frame = document.createElement('iframe');
+  frame.setAttribute('sandbox', 'allow-scripts');
+  frame.setAttribute('title', file);
+  frame.srcdoc = conAltezza(html);
+  wrap.appendChild(frame);
+  contenitore.innerHTML = '';
+  contenitore.appendChild(wrap);
+}
+
+window.addEventListener('message', (e) => {
+  if (!e.data || typeof e.data.c54h !== 'number') return;
+  document.querySelectorAll('.frame-wrap iframe').forEach(f => {
+    if (f.contentWindow === e.source) f.style.height = Math.max(200, e.data.c54h) + 'px';
+  });
+});
+
+// ─── Corso (invariato) ───
+function sbloccato(ep) {
+  return isAdminLocal || ep.gratuito || hasLifetimeLocal;
+}
+
+function renderLista() {
+  $('upsell').style.display = (!hasLifetimeLocal && !isAdminLocal) ? 'block' : 'none';
+  const lista = $('lista');
+  lista.innerHTML = '';
+
+  if (corsoEpisodi.length === 0) {
+    lista.innerHTML = `<div class="empty">${t('corso.empty')}</div>`;
+    return;
+  }
+
+  const moduli = new Map();
+  corsoEpisodi.forEach(ep => {
+    if (!moduli.has(ep.modulo)) moduli.set(ep.modulo, []);
+    moduli.get(ep.modulo).push(ep);
   });
 
-  // ═══ VIDEO (Bunny HLS) ═══
-  var BUNNY_HOST = 'vz-0bb944b6-412.b-cdn.net';
-  var hlsLoading = false, hlsCallbacks = [];
-  function loadHls(cb){
-    if (window.Hls) { cb(); return; }
-    hlsCallbacks.push(cb);
-    if (hlsLoading) return;
-    hlsLoading = true;
-    var s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/npm/hls.js@1/dist/hls.min.js';
-    s.onload = function(){ hlsCallbacks.forEach(function(f){ f(); }); hlsCallbacks = []; };
-    document.head.appendChild(s);
-  }
-  document.querySelectorAll('.video-card').forEach(function(card){
-    card.querySelector('.play-btn').addEventListener('click', function(){
-      var videoId = card.getAttribute('data-video-id');
-      var frame = card.querySelector('.video-frame');
-      var src = 'https://' + BUNNY_HOST + '/' + videoId + '/playlist.m3u8';
-      var video = document.createElement('video');
-      video.controls = true; video.autoplay = true; video.playsInline = true;
-      function playNative(){ video.src = src; frame.innerHTML = ''; frame.appendChild(video); video.play().catch(function(){}); }
-      if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        playNative();
-      } else {
-        loadHls(function(){
-          frame.innerHTML = '';
-          frame.appendChild(video);
-          if (window.Hls && window.Hls.isSupported()) {
-            var hls = new window.Hls(); hls.loadSource(src); hls.attachMedia(video); video.play().catch(function(){});
-          } else { playNative(); }
-        });
-      }
+  Array.from(moduli.keys()).sort((a, b) => a - b).forEach(modNum => {
+    const h = document.createElement('div');
+    h.className = 'modulo-title';
+    h.textContent = `${t('corso.modulo')} ${modNum} · ${t('mod.' + modNum) || ''}`;
+    lista.appendChild(h);
+
+    moduli.get(modNum).forEach(ep => {
+      const locked = !sbloccato(ep);
+      const card = document.createElement('div');
+      card.className = 'card' + (locked ? ' locked' : '');
+      card.innerHTML = `
+        <div class="icon">${locked ? '🔒' : '▶'}</div>
+        <div class="titolo">${ep['titolo_' + lang] || ep.titolo}</div>
+        ${ep.gratuito ? '<div class="free-badge">FREE</div>' : ''}
+      `;
+      card.addEventListener('click', () => apriEpisodio(ep, locked));
+      lista.appendChild(card);
     });
   });
+}
 
-  // ═══ AVVIO ═══
-  var saved = null;
-  try { saved = localStorage.getItem('core54_lang'); } catch(e) {}
-  var nav = (navigator.language || 'it').slice(0, 2).toLowerCase();
-  $('lang-select').addEventListener('change', function(){ applyLang(this.value); });
-  applyLang(saved || (LANGS.indexOf(nav) >= 0 ? nav : 'it'));
-})();
+async function apriEpisodio(ep, locked) {
+  if (locked) {
+    alert(t('corso.locked_alert'));
+    return;
+  }
+
+  const box = $('playerBox');
+  box.className = ep.modulo === 5 ? 'vert' : 'horiz';
+  box.innerHTML = `<div id="playerLoading">${t('player.loading')}</div>`;
+  $('playerOverlay').style.display = 'flex';
+
+  const { data: { session } } = await sb.auth.getSession();
+  try {
+    const resp = await fetch(`${SUPABASE_URL}/functions/v1/${EDGE_FUNCTION_NAME}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.access_token}`,
+        'apikey': SUPABASE_ANON_KEY,
+      },
+      body: JSON.stringify({ episodio_id: ep.id, lang }),
+    });
+    const json = await resp.json();
+    if (!resp.ok) throw new Error(json.error || 'Errore sconosciuto');
+
+    box.innerHTML = `<iframe src="${json.embedUrl}" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
+  } catch (e) {
+    box.innerHTML = `<div id="playerError">${t('player.error')} ${e.message}</div>`;
+  }
+}
+
+$('playerClose').addEventListener('click', () => {
+  $('playerOverlay').style.display = 'none';
+  $('playerBox').innerHTML = '';
+});
+
+$('loginBtn').addEventListener('click', async () => {
+  const email = $('email').value.trim();
+  const password = $('password').value;
+  $('loginError').textContent = '';
+  $('loginBtn').disabled = true;
+  try {
+    const { data, error } = await sb.auth.signInWithPassword({ email, password });
+    if (error) { $('loginError').textContent = error.message; return; }
+    await mostraCorso(data.session);
+  } finally {
+    $('loginBtn').disabled = false;
+  }
+});
+
+$('logoutBtn').addEventListener('click', async () => {
+  await sb.auth.signOut();
+  mostraLogin();
+});
+
+function aggiornaLingueUI() {
+  $('langCurTxt').textContent = lang.toUpperCase();
+  $('langOpts').innerHTML = LANGS.filter(l => l !== lang).map(l => `<button type="button" data-l="${l}">${l.toUpperCase()}</button>`).join('');
+}
+function apriLingue(aperto) {
+  $('langBox').classList.toggle('open', aperto);
+  $('langCur').setAttribute('aria-expanded', aperto ? 'true' : 'false');
+}
+$('langCur').addEventListener('click', () => apriLingue(!$('langBox').classList.contains('open')));
+$('langOpts').addEventListener('click', (e) => {
+  const b = e.target.closest('button[data-l]');
+  if (!b) return;
+  apriLingue(false);
+  $('langSelect').value = b.dataset.l;
+  $('langSelect').dispatchEvent(new Event('change'));
+});
+document.addEventListener('click', (e) => { if (!e.target.closest('#langBox')) apriLingue(false); });
+
+$('langSelect').addEventListener('change', (e) => {
+  applicaLingua(e.target.value);
+  if ($('tabs').style.display !== 'none') {
+    renderLista();
+    if (tabAttiva !== 'corso') mostraTab(tabAttiva); // ricarica il contenuto riservato nella nuova lingua
+  }
+});
+
+let linguaSalvata = null;
+try { linguaSalvata = localStorage.getItem('core54_lang'); } catch (e) {}
+const linguaBrowser = (navigator.language || 'it').slice(0, 2).toLowerCase();
+applicaLingua(linguaSalvata || (LANGS.includes(linguaBrowser) ? linguaBrowser : 'it'));
+boot();
 </script>
-
 </body>
 </html>
