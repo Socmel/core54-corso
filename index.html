@@ -445,7 +445,19 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 const $ = (id) => document.getElementById(id);
 let corsoEpisodi = [];
 let hasLifetimeLocal = false;
+let hasProvaLocal = false;      // NUOVO 15/11/2026 — prova 14 giorni attiva e non scaduta
 let isAdminLocal = false;
+
+// Oggi in Italia (AAAA-MM-GG) e regola della prova: identiche a get-video-token (data_scadenza = ultimo giorno valido).
+function oggiRoma() {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Rome', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+}
+function provaValidaLocal(a) {
+  if ((a.tipo || '').toLowerCase() !== 'prova') return false;
+  if ((a.stato_abbonamento || '').toLowerCase() !== 'attivo') return false;
+  const scad = String(a.data_scadenza || '').slice(0, 10);
+  return /^\d{4}-\d{2}-\d{2}$/.test(scad) && scad >= oggiRoma();
+}
 let profiloAdmin = false;       // profiles.is_admin — usato SOLO per il messaggio dei contenuti riservati
 const cacheRiservati = {};      // nome file → HTML già scaricato in questa sessione
 const TABS = ['corso', 'strategie', 'calcolatore', 'download'];
@@ -479,18 +491,27 @@ async function mostraCorso(session) {
 
   const [{ data: episodi }, { data: abbonamenti }, { data: profilo }] = await Promise.all([
     sb.from('corso_episodi').select('*').eq('pubblicato', true).order('modulo', { ascending: true }).order('ordine', { ascending: true }),
-    sb.from('abbonamenti_utenti').select('tipo, stato_abbonamento').eq('client_id', session.user.id),
+    sb.from('abbonamenti_utenti').select('tipo, stato_abbonamento, data_scadenza').eq('client_id', session.user.id),
     sb.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle(),
   ]);
 
   corsoEpisodi = episodi || [];
   hasLifetimeLocal = (abbonamenti || []).some(a => a.tipo === 'lifetime' && (a.stato_abbonamento || '').toLowerCase() === 'attivo');
+  // NUOVO 15/11/2026 — Prova 14 giorni: sblocca SOLO i video del corso (non strategie/calcolatore/PDF,
+  // che restano legati a hasLifetimeLocal). Stessa regola di provaValida in get-video-token.
+  hasProvaLocal = (abbonamenti || []).some(provaValidaLocal);
   profiloAdmin = !!(profilo && profilo.is_admin);
 
   // NOTA: questo controllo lato client serve SOLO per mostrare lucchetti/badge nella UI. Il vero
   // controllo di accesso — quello che conta davvero — vive nella Edge Function get-video-token,
   // interrogata al momento di aprire un episodio: è lì che si decide se il link firmato viene
   // rilasciato o no, non qui.
+  // NUOVO 15/11/2026 — chi ha SOLO la prova vede solo la scheda Corso: Strategie, Calcolatore e Download
+  // non sono inclusi e i loro testi di blocco invitano alla Lifetime (link aperto dall'app: regola Apple 3.1.3(f)).
+  const soloProva = hasProvaLocal && !hasLifetimeLocal && !profiloAdmin && !isAdminLocal;
+  document.querySelectorAll('#tabs button').forEach(b => { b.style.display = (soloProva && b.dataset.tab !== 'corso') ? 'none' : ''; });
+  if (soloProva) tabAttiva = 'corso';
+
   renderLista();
   mostraTab(tabAttiva);
 }
@@ -660,11 +681,11 @@ window.addEventListener('message', (e) => {
 
 // ─── Corso (invariato) ───
 function sbloccato(ep) {
-  return isAdminLocal || ep.gratuito || hasLifetimeLocal;
+  return isAdminLocal || ep.gratuito || hasLifetimeLocal || hasProvaLocal;
 }
 
 function renderLista() {
-  $('upsell').style.display = (!hasLifetimeLocal && !isAdminLocal) ? 'block' : 'none';
+  $('upsell').style.display = (!hasLifetimeLocal && !hasProvaLocal && !isAdminLocal) ? 'block' : 'none';
   const lista = $('lista');
   lista.innerHTML = '';
 
@@ -788,4 +809,4 @@ applicaLingua(linguaSalvata || (LANGS.includes(linguaBrowser) ? linguaBrowser : 
 boot();
 </script>
 </body>
-</html> 
+</html>
