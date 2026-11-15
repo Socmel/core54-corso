@@ -55,6 +55,7 @@
   #tabs button { background: none; border: 0; color: var(--text2); font-size: 14px; font-weight: 700; padding: 9px 18px; border-radius: 999px; cursor: pointer; white-space: nowrap; font-family: inherit; }
   #tabs button:hover { color: var(--yellow); }
   #tabs button.on { background: var(--yellow); color: #111; }
+  #tabs button.lk::after { content: " 🔒"; font-size: 11px; }
   .pane { display: none; }
   .pane.on { display: block; }
   .pane-head { margin: 0 0 18px; }
@@ -269,12 +270,12 @@ const I18N = {
     'strat.title': 'Mappe strategiche', 'strat.sub': 'I percorsi della strategia, fase Sfida e fase Reale.',
     'strat.50k': 'FundedNext 50K', 'strat.100k': 'FundedNext 100K', 'strat.goat100k': 'GOAT 100K',
     'calc.title': 'Calcolatore SL / TP', 'calc.sub': "Inserisci i dati della prop: ottieni i valori di SL e TP da impostare su Core54 e l'effetto sul saldo del broker.",
-    'ris.locked_t': 'Contenuto riservato ai clienti Lifetime', 'ris.locked_p': 'Strategie e calcolatore si sbloccano con il piano Lifetime.',
+    'ris.locked_strat_t': 'Mappe riservate', 'ris.locked_strat_p': 'Le mappe delle strategie si sbloccano con il piano Lifetime (Corso) o con il Trading attivo.', 'ris.locked_calc_t': 'Calcolatore riservato', 'ris.locked_calc_p': 'Il calcolatore è incluso nella Prova 14 giorni e si sblocca con il piano Lifetime (Corso) o con il Trading attivo.',
     'ris.loading': 'Caricamento…', 'ris.error': 'Impossibile caricare il contenuto. Riprova tra poco; se il problema continua scrivi a info@core54.app.',
     'player.loading': 'Caricamento…', 'player.error': 'Impossibile riprodurre il video:',
     'tab.download': '⬇️ Download', 'dl.title': 'Download', 'dl.sub': 'Bridge, istruzioni per il PC e PDF delle strategie.',
     'dl.sec_bridge': 'Programma', 'dl.sec_pc': 'Guide', 'dl.sec_strat': 'PDF Strategie', 'dl.btn_row': 'Scarica', 'dl.det': 'Novità e istruzioni di installazione',
-    'dl.locked_pc': 'Le istruzioni per il PC si scaricano con un abbonamento attivo.', 'dl.locked_strat': 'I PDF delle strategie si sbloccano con il piano Lifetime.',
+    'dl.locked_pc': 'Le istruzioni per il PC si scaricano con un abbonamento attivo.', 'dl.locked_strat': 'I PDF delle strategie si sbloccano con il piano Lifetime (Corso) o con il Trading attivo.',
     'dl.versione': 'Versione', 'dl.btn': 'Scarica il Bridge', 'dl.novita': 'Novità',
     'dl.nota': "Se Windows mostra <b>«PC protetto da Windows»</b>: premiamo <b>Ulteriori informazioni</b> e poi <b>Esegui comunque</b>. Per aggiornare basta premere <b>Aggiorna ora il Bridge sul PC</b> nell'app, oppure installare sopra la versione vecchia: il collegamento con l'app resta.",
     'dl.locked_t': 'Riservato ai clienti CORE-54', 'dl.locked_p': 'Il Bridge si scarica con un abbonamento attivo. Se ti sei appena abbonato e lo vedi ancora bloccato, scrivi a info@core54.app.',
@@ -301,12 +302,12 @@ const I18N = {
     'strat.title': 'Strategy maps', 'strat.sub': 'The strategy paths, Challenge phase and Funded phase.',
     'strat.50k': 'FundedNext 50K', 'strat.100k': 'FundedNext 100K', 'strat.goat100k': 'GOAT 100K',
     'calc.title': 'SL / TP calculator', 'calc.sub': 'Enter the prop data: get the SL and TP values to set on Core54 and the effect on the broker balance.',
-    'ris.locked_t': 'Content reserved for Lifetime clients', 'ris.locked_p': 'Strategies and calculator unlock with the Lifetime plan.',
+    'ris.locked_strat_t': 'Maps reserved', 'ris.locked_strat_p': 'Strategy maps unlock with the Lifetime plan (Course) or with active Trading.', 'ris.locked_calc_t': 'Calculator reserved', 'ris.locked_calc_p': 'The calculator is included in the 14-day Trial and unlocks with the Lifetime plan (Course) or with active Trading.',
     'ris.loading': 'Loading…', 'ris.error': 'Unable to load the content. Please try again shortly; if the problem persists write to info@core54.app.',
     'player.loading': 'Loading…', 'player.error': 'Unable to play the video:',
     'tab.download': '⬇️ Download', 'dl.title': 'Download', 'dl.sub': 'Bridge, PC setup guide and strategy PDFs.',
     'dl.sec_bridge': 'Program', 'dl.sec_pc': 'Guides', 'dl.sec_strat': 'Strategy PDFs', 'dl.btn_row': 'Download', 'dl.det': "What's new and install notes",
-    'dl.locked_pc': 'The PC setup guide can be downloaded with an active subscription.', 'dl.locked_strat': 'Strategy PDFs are unlocked with the Lifetime plan.',
+    'dl.locked_pc': 'The PC setup guide can be downloaded with an active subscription.', 'dl.locked_strat': 'Strategy PDFs unlock with the Lifetime plan (Course) or with active Trading.',
     'dl.versione': 'Version', 'dl.btn': 'Download the Bridge', 'dl.novita': "What's new",
     'dl.nota': 'If Windows shows <b>"Windows protected your PC"</b>: click <b>More info</b> and then <b>Run anyway</b>. To update, just press <b>Update the Bridge on the PC now</b> in the app, or install over the old version: the link with the app is kept.',
     'dl.locked_t': 'Reserved for CORE-54 clients', 'dl.locked_p': 'The Bridge can be downloaded with an active subscription. If you have just subscribed and still see it locked, write to info@core54.app.',
@@ -333,12 +334,12 @@ const I18N = {
     'strat.title': 'Strategiekarten', 'strat.sub': 'Die Pfade der Strategie, Challenge-Phase und Funded-Phase.',
     'strat.50k': 'FundedNext 50K', 'strat.100k': 'FundedNext 100K', 'strat.goat100k': 'GOAT 100K',
     'calc.title': 'SL/TP-Rechner', 'calc.sub': 'Gib die Daten der Prop ein: Du erhältst die SL- und TP-Werte für Core54 und die Auswirkung auf den Broker-Saldo.',
-    'ris.locked_t': 'Inhalt nur für Lifetime-Kunden', 'ris.locked_p': 'Strategien und Rechner werden mit dem Lifetime-Plan freigeschaltet.',
+    'ris.locked_strat_t': 'Karten reserviert', 'ris.locked_strat_p': 'Die Strategiekarten werden mit dem Lifetime-Plan (Kurs) oder bei aktivem Trading freigeschaltet.', 'ris.locked_calc_t': 'Rechner reserviert', 'ris.locked_calc_p': 'Der Rechner ist in der 14-Tage-Testphase enthalten und wird mit dem Lifetime-Plan (Kurs) oder bei aktivem Trading freigeschaltet.',
     'ris.loading': 'Wird geladen…', 'ris.error': 'Inhalt konnte nicht geladen werden. Versuche es gleich noch einmal; wenn das Problem bleibt, schreib an info@core54.app.',
     'player.loading': 'Wird geladen…', 'player.error': 'Video kann nicht abgespielt werden:',
     'tab.download': '⬇️ Download', 'dl.title': 'Download', 'dl.sub': 'Bridge, Anleitung für den PC und Strategie-PDFs.',
     'dl.sec_bridge': 'Programm', 'dl.sec_pc': 'Anleitungen', 'dl.sec_strat': 'Strategie-PDFs', 'dl.btn_row': 'Herunterladen', 'dl.det': 'Neuerungen und Installationshinweise',
-    'dl.locked_pc': 'Die Anleitung für den PC gibt es mit einem aktiven Abo.', 'dl.locked_strat': 'Die Strategie-PDFs werden mit dem Lifetime-Plan freigeschaltet.',
+    'dl.locked_pc': 'Die Anleitung für den PC gibt es mit einem aktiven Abo.', 'dl.locked_strat': 'Die Strategie-PDFs werden mit dem Lifetime-Plan (Kurs) oder bei aktivem Trading freigeschaltet.',
     'dl.versione': 'Version', 'dl.btn': 'Bridge herunterladen', 'dl.novita': 'Neu',
     'dl.nota': 'Wenn Windows <b>„Der Computer wurde durch Windows geschützt“</b> anzeigt: auf <b>Weitere Informationen</b> und dann auf <b>Trotzdem ausführen</b> klicken. Zum Aktualisieren einfach in der App <b>Bridge am PC jetzt aktualisieren</b> tippen oder über die alte Version installieren: die Verbindung mit der App bleibt erhalten.',
     'dl.locked_t': 'Nur für CORE-54-Kunden', 'dl.locked_p': 'Die Bridge kann mit einem aktiven Abo heruntergeladen werden. Wenn du gerade ein Abo abgeschlossen hast und sie noch gesperrt ist, schreib an info@core54.app.',
@@ -365,12 +366,12 @@ const I18N = {
     'strat.title': 'Mapas estratégicos', 'strat.sub': 'Los recorridos de la estrategia, fase de Desafío y fase Real.',
     'strat.50k': 'FundedNext 50K', 'strat.100k': 'FundedNext 100K', 'strat.goat100k': 'GOAT 100K',
     'calc.title': 'Calculadora SL / TP', 'calc.sub': 'Introduce los datos de la prop: obtén los valores de SL y TP para configurar en Core54 y el efecto en el saldo del bróker.',
-    'ris.locked_t': 'Contenido reservado a clientes Lifetime', 'ris.locked_p': 'Las estrategias y la calculadora se desbloquean con el plan Lifetime.',
+    'ris.locked_strat_t': 'Mapas reservados', 'ris.locked_strat_p': 'Los mapas de las estrategias se desbloquean con el plan Lifetime (Curso) o con el Trading activo.', 'ris.locked_calc_t': 'Calculadora reservada', 'ris.locked_calc_p': 'La calculadora está incluida en la Prueba de 14 días y se desbloquea con el plan Lifetime (Curso) o con el Trading activo.',
     'ris.loading': 'Cargando…', 'ris.error': 'No se ha podido cargar el contenido. Inténtalo de nuevo en breve; si el problema continúa escribe a info@core54.app.',
     'player.loading': 'Cargando…', 'player.error': 'No se puede reproducir el vídeo:',
     'tab.download': '⬇️ Descargas', 'dl.title': 'Descargas', 'dl.sub': 'Bridge, guía del PC y PDF de las estrategias.',
     'dl.sec_bridge': 'Programa', 'dl.sec_pc': 'Guías', 'dl.sec_strat': 'PDF de estrategias', 'dl.btn_row': 'Descargar', 'dl.det': 'Novedades y notas de instalación',
-    'dl.locked_pc': 'La guía del PC se descarga con una suscripción activa.', 'dl.locked_strat': 'Los PDF de las estrategias se desbloquean con el plan Lifetime.',
+    'dl.locked_pc': 'La guía del PC se descarga con una suscripción activa.', 'dl.locked_strat': 'Los PDF de las estrategias se desbloquean con el plan Lifetime (Curso) o con el Trading activo.',
     'dl.versione': 'Versión', 'dl.btn': 'Descargar el Bridge', 'dl.novita': 'Novedades',
     'dl.nota': 'Si Windows muestra <b>«Windows protegió su PC»</b>: pulsamos <b>Más información</b> y luego <b>Ejecutar de todas formas</b>. Para actualizar basta con pulsar <b>Actualizar ahora el Bridge en el PC</b> en la app, o instalar encima de la versión anterior: la conexión con la app se mantiene.',
     'dl.locked_t': 'Reservado a los clientes de CORE-54', 'dl.locked_p': 'El Bridge se descarga con una suscripción activa. Si acabas de suscribirte y sigue bloqueado, escribe a info@core54.app.',
@@ -397,12 +398,12 @@ const I18N = {
     'strat.title': 'Mapy strategiczne', 'strat.sub': 'Ścieżki strategii, faza wyzwania i faza finansowana.',
     'strat.50k': 'FundedNext 50K', 'strat.100k': 'FundedNext 100K', 'strat.goat100k': 'GOAT 100K',
     'calc.title': 'Kalkulator SL / TP', 'calc.sub': 'Wpisz dane propa: otrzymasz wartości SL i TP do ustawienia w Core54 oraz wpływ na saldo u brokera.',
-    'ris.locked_t': 'Treść tylko dla klientów Lifetime', 'ris.locked_p': 'Strategie i kalkulator odblokowują się z planem Lifetime.',
+    'ris.locked_strat_t': 'Mapy zastrzeżone', 'ris.locked_strat_p': 'Mapy strategii odblokowują się z planem Lifetime (Kurs) lub przy aktywnym Tradingu.', 'ris.locked_calc_t': 'Kalkulator zastrzeżony', 'ris.locked_calc_p': 'Kalkulator jest wliczony w 14-dniowy Okres próbny i odblokowuje się z planem Lifetime (Kurs) lub przy aktywnym Tradingu.',
     'ris.loading': 'Ładowanie…', 'ris.error': 'Nie udało się załadować treści. Spróbuj ponownie za chwilę; jeśli problem się powtarza, napisz na info@core54.app.',
     'player.loading': 'Ładowanie…', 'player.error': 'Nie można odtworzyć filmu:',
     'tab.download': '⬇️ Pobieranie', 'dl.title': 'Pobieranie', 'dl.sub': 'Bridge, instrukcja dla komputera i PDF-y strategii.',
     'dl.sec_bridge': 'Program', 'dl.sec_pc': 'Instrukcje', 'dl.sec_strat': 'PDF-y strategii', 'dl.btn_row': 'Pobierz', 'dl.det': 'Nowości i uwagi o instalacji',
-    'dl.locked_pc': 'Instrukcję dla komputera pobierzesz z aktywną subskrypcją.', 'dl.locked_strat': 'PDF-y strategii odblokowuje plan Lifetime.',
+    'dl.locked_pc': 'Instrukcję dla komputera pobierzesz z aktywną subskrypcją.', 'dl.locked_strat': 'PDF-y strategii odblokowuje plan Lifetime (Kurs) lub aktywny Trading.',
     'dl.versione': 'Wersja', 'dl.btn': 'Pobierz Bridge', 'dl.novita': 'Nowości',
     'dl.nota': 'Jeśli Windows pokaże <b>„System Windows ochronił ten komputer”</b>: klikamy <b>Więcej informacji</b>, a potem <b>Uruchom mimo to</b>. Aby zaktualizować, wystarczy w aplikacji nacisnąć <b>Zaktualizuj teraz Bridge na komputerze</b> albo zainstalować na starej wersji: połączenie z aplikacją zostaje.',
     'dl.locked_t': 'Tylko dla klientów CORE-54', 'dl.locked_p': 'Bridge można pobrać z aktywną subskrypcją. Jeśli właśnie wykupiłeś subskrypcję i nadal widzisz blokadę, napisz na info@core54.app.',
@@ -447,6 +448,11 @@ let corsoEpisodi = [];
 let hasLifetimeLocal = false;
 let hasProvaLocal = false;      // NUOVO 15/11/2026 — prova 14 giorni attiva e non scaduta
 let isAdminLocal = false;
+let hasTradingLocal = false;    // NUOVO 15/11/2026 — Ricorrente attivo e non scaduto (Trading)
+
+// Chi può vedere cosa (solo UI: il vero controllo è la policy di Storage "riservato_select_clienti").
+const puoMappe = () => hasLifetimeLocal || hasTradingLocal || profiloAdmin || isAdminLocal;
+const puoCalcolatore = () => puoMappe() || hasProvaLocal;
 
 // Oggi in Italia (AAAA-MM-GG) e regola della prova: identiche a get-video-token (data_scadenza = ultimo giorno valido).
 function oggiRoma() {
@@ -500,17 +506,24 @@ async function mostraCorso(session) {
   // NUOVO 15/11/2026 — Prova 14 giorni: sblocca SOLO i video del corso (non strategie/calcolatore/PDF,
   // che restano legati a hasLifetimeLocal). Stessa regola di provaValida in get-video-token.
   hasProvaLocal = (abbonamenti || []).some(provaValidaLocal);
+  // Stessa regola della policy di Storage "riservato_select_clienti" (Ricorrente attivo, scadenza null o >= oggi).
+  hasTradingLocal = (abbonamenti || []).some(a => (a.tipo || '').toLowerCase() === 'ricorrente'
+    && (a.stato_abbonamento || '').toLowerCase() === 'attivo'
+    && (!a.data_scadenza || String(a.data_scadenza).slice(0, 10) >= oggiRoma()));
   profiloAdmin = !!(profilo && profilo.is_admin);
 
   // NOTA: questo controllo lato client serve SOLO per mostrare lucchetti/badge nella UI. Il vero
   // controllo di accesso — quello che conta davvero — vive nella Edge Function get-video-token,
   // interrogata al momento di aprire un episodio: è lì che si decide se il link firmato viene
   // rilasciato o no, non qui.
-  // NUOVO 15/11/2026 — chi ha SOLO la prova vede solo la scheda Corso: Strategie, Calcolatore e Download
-  // non sono inclusi e i loro testi di blocco invitano alla Lifetime (link aperto dall'app: regola Apple 3.1.3(f)).
-  const soloProva = hasProvaLocal && !hasLifetimeLocal && !profiloAdmin && !isAdminLocal;
-  document.querySelectorAll('#tabs button').forEach(b => { b.style.display = (soloProva && b.dataset.tab !== 'corso') ? 'none' : ''; });
-  if (soloProva) tabAttiva = 'corso';
+  // MODIFICA 15/11/2026 (Socmel) — le 4 schede sono SEMPRE visibili; quelle non incluse hanno il lucchetto
+  // sul bottone e un messaggio nella pagina (testi senza link di acquisto: regola Apple 3.1.3(f)).
+  // Mappe: Lifetime (Corso) o Trading o admin. Calcolatore: in più la Prova 14 gg. Download: sempre aperta
+  // (ogni riga si blocca da sola in base alla policy di Storage).
+  document.querySelectorAll('#tabs button').forEach(b => {
+    b.style.display = '';
+    b.classList.toggle('lk', (b.dataset.tab === 'strategie' && !puoMappe()) || (b.dataset.tab === 'calcolatore' && !puoCalcolatore()));
+  });
 
   renderLista();
   mostraTab(tabAttiva);
@@ -523,7 +536,7 @@ function mostraTab(nome) {
   document.querySelectorAll('.pane').forEach(p => p.classList.toggle('on', p.id === 'pane-' + nome));
   $('main').classList.toggle('wide', nome === 'strategie' || nome === 'calcolatore');
   if (nome === 'strategie') caricaStrategia();
-  if (nome === 'calcolatore') caricaRiservato('calcolatore.html', $('calc-body'), false);
+  if (nome === 'calcolatore') caricaRiservato('calcolatore.html', $('calc-body'), false, 'calc');
   if (nome === 'download') caricaDownload();
 }
 
@@ -565,7 +578,7 @@ async function caricaDownload() {
     if (mio !== dlCarico) return;
     bridgeOk = !prova.error && !!prova.data;
   }
-  const strategieOk = hasLifetimeLocal || profiloAdmin || isAdminLocal;
+  const strategieOk = puoMappe();
 
   let bridge;
   if (error || !ril) {
@@ -618,7 +631,7 @@ document.querySelectorAll('#strat-switch button').forEach(b => b.addEventListene
 }));
 function caricaStrategia() {
   const file = document.querySelector('#strat-switch button.on').dataset.file;
-  caricaRiservato(file, $('strat-body'), true);
+  caricaRiservato(file, $('strat-body'), true, 'strat');
 }
 
 // Script iniettato nel contenuto: comunica all'area clienti l'altezza reale della pagina, così
@@ -637,9 +650,9 @@ function conAltezza(html) {
   return i >= 0 ? html.slice(0, i) + ALTEZZA_JS + html.slice(i) : html + ALTEZZA_JS;
 }
 
-async function caricaRiservato(file, contenitore, sfondoCarta) {
-  if (!hasLifetimeLocal && !profiloAdmin && !isAdminLocal) {
-    contenitore.innerHTML = `<div class="locked-box"><div class="ico">🔒</div><h3>${t('ris.locked_t')}</h3><p>${t('ris.locked_p')}</p></div>`;
+async function caricaRiservato(file, contenitore, sfondoCarta, tipo) {
+  if (!(tipo === 'calc' ? puoCalcolatore() : puoMappe())) {
+    contenitore.innerHTML = `<div class="locked-box"><div class="ico">🔒</div><h3>${t('ris.locked_' + tipo + '_t')}</h3><p>${t('ris.locked_' + tipo + '_p')}</p></div>`;
     contenitore.dataset.file = '';
     return;
   }
